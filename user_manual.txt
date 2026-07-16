@@ -1,0 +1,203 @@
+1. IMPORTANT INFO
+
+• This layout is desktop-only and is NOT responsive.
+• CSS is located inside `<style>` tags or inside an external `.css` file.
+• JS is located inside `<script>` tags or inside an external `.js` file.
+• Editing the JavaScript is NOT required for normal customization.
+• Fonts are included inside the ZIP file. Upload them to your own host (update the file path on <style>)
+
+2. DESKTOP ICONS
+
+Desktop icons are located near the top of the HTML.
+Icon are from https://pixelarticons.com/
+I have converted SVGs to PNGs here: https://www.svgviewer.dev/svg-to-png
+
+• To change a popup window size, edit the desktop icon's data-width and data-height values.
+• Windows open in random positions by default. If you want a popup window to open in a specific place, add optional data-left and data-top values to its desktop icon.
+
+Example:
+
+<a href="#about"
+class="desktop-icon"
+data-window-id="about"
+data-title="About me"
+data-width="240"
+data-height="285"
+data-left="480"
+data-top="160"
+data-source="window-about">
+
+Explanation:
+
+data-window-id=""
+• Unique ID for the popup window
+
+data-title=""
+• Window title shown in the titlebar
+
+data-width=""
+• Window width in pixels
+
+data-height=""
+• Window height in pixels
+
+data-source=""
+• Connects the icon to hidden popup content
+
+Optional:
+
+data-left=""
+data-top=""
+
+• Opens the popup window in an exact desktop location
+
+If data-left and data-top are removed, the window will open in a random desktop position.
+
+---
+
+Desktop icons use normal image tags.
+
+Example:
+
+<img src="ICON-URL-HERE">
+
+You can replace the image URL with your own icons.
+
+If icons appear too small or blurry, crop or resize the image before using it.
+
+---
+
+3. POPUP WINDOW CONTENT
+
+Popup window content is stored near the bottom of the file inside hidden divs.
+
+Example:
+
+<div id="window-about" class="window-source">
+
+The ID must match the desktop icon's data-source value.
+
+Example:
+
+data-source="window-about"
+
+---
+
+4. ADDING A NEW POPUP WINDOW
+
+STEP 1:
+Create hidden popup content:
+
+<div id="window-example" class="window-source">
+Your content here
+</div>
+
+STEP 2:
+Create a desktop icon:
+
+<a href="#example"
+class="desktop-icon"
+data-window-id="example"
+data-title="Example"
+data-width="300"
+data-height="200"
+data-source="window-example">
+    <img src="https://itinerae.neocities.org/98/icons/monitor.png" alt="icon"> Example
+    </a>
+
+STEP 3:
+Done.
+The popup window should now open when clicking the icon.
+
+---
+
+5. CD PLAYER
+
+Tracks are edited inside:
+
+<select id="cd-track-select">
+
+Example track:
+
+<option
+  value="song.mp3"
+  data-cover="cover.jpg">
+  My Song
+</option>
+
+value=""
+• Direct MP3 file URL
+
+data-cover=""
+• Cover image URL
+
+If data-cover="" is empty, the default CD image will be used.
+
+IMPORTANT:
+The music link must be a DIRECT audio file URL.
+Usually the link ends in `.mp3`
+
+---
+
+ADDING MORE SONGS
+
+Simply add more `<option>` lines inside the track list.
+
+Example:
+
+<option
+  value="song2.mp3"
+  data-cover="cover2.jpg">
+  Another Song
+</option>
+
+You do NOT need to edit the main `<audio>` tag when adding more tracks.
+
+---
+
+6. COMMON PROBLEMS
+
+"My popup window is empty"
+→ data-source="" does not match the hidden div ID.
+
+"My music is not playing"
+→ the MP3 link is not a direct audio file.
+
+"My popup window opens off screen"
+→ data-left or data-top values are too large.
+
+"My iframe does not load"
+→ some websites block iframe embedding.
+
+"My icons look blurry"
+→ use larger or properly cropped images.
+
+"Custom font is not loading"
+→ external font files may occasionally stop working across different hosts.
+
+Example:
+A font hosted on Neocities may not always load correctly on Nekoweb (or vice versa).
+
+If this happens:
+• upload the included font files to your own website host
+• check the font file path
+• refresh browser cache
+
+"My CSS or JS is not loading"
+→ check that:
+• style.css and script.js are uploaded
+• file names match exactly
+• file paths inside index.html are correct
+
+Example:
+
+<link rel="stylesheet" href="style.css">
+<script src="script.js"></script>
+
+---
+
+7. FINAL NOTES
+
+• Edit and customize the layout however you wish.
+• Please do not redistribute or resell the original files.
+• Credit is appreciated, but not required. :)

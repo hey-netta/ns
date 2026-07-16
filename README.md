@@ -1,2 +1,0 @@
-# nettaselene
-# ns

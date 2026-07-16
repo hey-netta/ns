@@ -1,0 +1,8 @@
+1. Start making your website at Neocities, Nekoweb, or another website host.
+2. Upload all included files to your website builder.
+3. Open the `index.html` file to begin editing the layout.
+4. Custom fonts are included inside the ZIP file. Upload the included font files directly to your own website host and update the file paths.
+5. Remember to change the style.css and script.js file paths to your own, if you are using the version with external files.
+6. Edit and customize the layout however you wish. Thank you for supporting me !
+
+PS. Please read also the user manual. :)
