@@ -1,0 +1,33 @@
+* { margin: 0; padding: 0; outline: 0; }
+
+html, body {
+	min-width: 100%;
+	min-height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: 'Montserrat';
+	text-align: left;
+	-webkit-font-smoothing: antialiased;
+	color: #2F5B7E;
+}
+
+#bg {
+  position: fixed; 
+  top: -50%; 
+  left: -50%; 
+  width: 200%; 
+  height: 200%;
+}
+#bg img {
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0; 
+  margin: auto; 
+  min-width: 50%;
+  min-height: 50%;
+}
