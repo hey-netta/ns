@@ -1,5 +1,12 @@
 let topZ = 10;
 const taskbar = document.getElementById("taskbar-windows");
+const mobileLayoutQuery = window.matchMedia("(max-width: 820px)");
+const isMobileLayout = () => mobileLayoutQuery.matches;
+const scrollWindowIntoView = win => {
+  if (isMobileLayout()) {
+    win.scrollIntoView({ block: "start" });
+  }
+};
 
 /* SHARED WINDOW LOGIC
    Works for both static windows and dynamic windows. */
@@ -43,6 +50,7 @@ function attachWindowLogic(win) {
 
   win.style.display = "flex";
   bringToFront();
+  scrollWindowIntoView(win);
 
   requestAnimationFrame(() => {
     win.classList.remove("restoring");
@@ -71,6 +79,8 @@ const hideWindow = () => {
   });
 
   bar.addEventListener("mousedown", e => {
+    if (isMobileLayout()) return;
+
     // Do not drag if the click started on a titlebar button.
     if (e.target.closest("button")) return;
 
@@ -86,6 +96,11 @@ const hideWindow = () => {
 
   document.addEventListener("mousemove", e => {
     if (!dragging) return;
+    if (isMobileLayout()) {
+      dragging = false;
+      return;
+    }
+
     win.style.left = `${e.clientX - offsetX}px`;
     win.style.top = `${e.clientY - offsetY}px`;
   });
@@ -230,6 +245,7 @@ document.querySelectorAll(".desktop-icon[data-window-id]").forEach(icon => {
       document.querySelectorAll(".taskbar-btn").forEach(btn => {
         if (btn.textContent.trim() === existingTitle) btn.classList.add("active");
       });
+      scrollWindowIntoView(existing);
       return;
     }
 
@@ -297,6 +313,7 @@ function createDynamicWindow(icon) {
 
   document.body.appendChild(win);
   attachWindowLogic(win);
+  scrollWindowIntoView(win);
 }
 
 function escapeHTML(str) {
