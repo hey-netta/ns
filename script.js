@@ -4,6 +4,7 @@ const mobileLayoutQuery = window.matchMedia("(max-width: 820px)");
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const isMobileLayout = () => mobileLayoutQuery.matches;
 const taskButtonsByWindowKey = new Map();
+const staticWindowTemplates = new Map();
 let mobileWindowObserver = null;
 const mobileWindowRatios = new Map();
 let mobileActiveLockKey = "";
@@ -179,6 +180,90 @@ function getOrCreateTaskButton(key, title, options = {}) {
   return taskBtn;
 }
 
+function ensureTaskButton(win) {
+  const key = getWindowKey(win);
+  const title = win.querySelector(".window-title")?.textContent.trim() || "Window";
+  const taskBtn = getOrCreateTaskButton(key, title, {
+    windowCreated: true
+  });
+
+  taskBtn.setAttribute("aria-controls", win.id || keyToDomId(key));
+  return taskBtn;
+}
+
+function removeTaskButton(win) {
+  const key = getWindowKey(win);
+  const taskBtn = taskButtonsByWindowKey.get(key);
+
+  if (taskBtn) {
+    taskBtn.remove();
+    taskButtonsByWindowKey.delete(key);
+  }
+}
+
+function closeStartMenu() {
+  if (startMenu) startMenu.style.display = "none";
+  if (startBtn) startBtn.classList.remove("active");
+}
+
+function openStaticWindow(staticId) {
+  let win = findWindowByKey("static:" + staticId) ||
+    document.querySelector(`.app-window[data-id="${CSS.escape(staticId)}"]`);
+
+  if (!win) {
+    const template = staticWindowTemplates.get(staticId);
+    if (!template) return null;
+
+    win = template.cloneNode(true);
+    document.body.appendChild(win);
+    attachWindowLogic(win);
+  }
+
+  if (!win.dataset.windowReady) {
+    attachWindowLogic(win);
+  }
+
+  ensureTaskButton(win);
+
+  if (mobileWindowObserver) {
+    mobileWindowObserver.observe(win);
+  }
+
+  activateWindow(win, {
+    focus: true,
+    scroll: isMobileLayout()
+  });
+
+  return win;
+}
+
+function openDynamicWindow(launcher) {
+  const windowId = launcher.dataset.windowId;
+  const existing = findWindowByKey("dynamic:" + windowId);
+
+  if (existing) {
+    activateWindow(existing, {
+      focus: true,
+      scroll: isMobileLayout()
+    });
+    return existing;
+  }
+
+  return createDynamicWindow(launcher);
+}
+
+function launchWindowFromElement(launcher) {
+  if (launcher.dataset.staticId) {
+    return openStaticWindow(launcher.dataset.staticId);
+  }
+
+  if (launcher.dataset.windowId) {
+    return openDynamicWindow(launcher);
+  }
+
+  return null;
+}
+
 function updateMobileWindowObserver() {
   if (mobileWindowObserver) {
     mobileWindowObserver.disconnect();
@@ -256,19 +341,17 @@ function attachWindowLogic(win) {
   let offsetX = 0;
   let offsetY = 0;
 
-  const title = titleEl.textContent.trim();
-  const taskBtn = getOrCreateTaskButton(windowKey, title, {
-    windowCreated: true
-  });
-  taskBtn.setAttribute("aria-controls", win.id);
+  ensureTaskButton(win);
 
   const bringToFront = () => {
     activateWindow(win, { focus: false });
   };
 
   const hideWindow = () => {
+    const taskBtn = taskButtonsByWindowKey.get(windowKey);
+
     win.classList.add("minimizing");
-    taskBtn.classList.remove("active");
+    if (taskBtn) taskBtn.classList.remove("active");
     win.classList.remove("active");
 
     setTimeout(() => {
@@ -317,9 +400,15 @@ function attachWindowLogic(win) {
   if (btnClose) {
     btnClose.addEventListener("click", e => {
       e.stopPropagation();
-      win.remove();
-      taskBtn.remove();
-      taskButtonsByWindowKey.delete(windowKey);
+
+      if (win.dataset.id) {
+        win.style.display = "none";
+        win.classList.remove("active", "minimizing", "restoring");
+      } else {
+        win.remove();
+      }
+
+      removeTaskButton(win);
 
       if (mobileWindowObserver) {
         mobileWindowObserver.unobserve(win);
@@ -355,6 +444,10 @@ function attachWindowLogic(win) {
 }
 
 /* STATIC WINDOWS */
+document.querySelectorAll(".app-window[data-id]").forEach(win => {
+  staticWindowTemplates.set(win.dataset.id, win.cloneNode(true));
+});
+
 document.querySelectorAll(".app-window").forEach(win => {
 
   if (win.dataset.windowId) {
@@ -406,6 +499,88 @@ function restoreWindowPosition(win) {
   }
 }
 
+function buildContactFormPayload(form) {
+  const formData = new FormData(form);
+  const email = String(formData.get("email") || "").trim();
+
+  return {
+    formData,
+    name: String(formData.get("name") || "").trim(),
+    email,
+    replyTo: email,
+    message: String(formData.get("message") || ""),
+    honeypot: String(formData.get("website") || "")
+  };
+}
+
+async function submitContactForm(form) {
+  const status = form.querySelector("[data-contact-status]");
+  const submitButton = form.querySelector('button[type="submit"]');
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return null;
+  }
+
+  const payload = buildContactFormPayload(form);
+  const endpoint = form.getAttribute("action");
+
+  if (!endpoint) {
+    if (status) {
+      status.textContent = "This form is missing its connection. Please try again later.";
+    }
+    return null;
+  }
+
+  if (status) {
+    status.textContent = "Sending...";
+  }
+
+  if (submitButton) {
+    submitButton.disabled = true;
+  }
+
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        Accept: "application/json"
+      },
+      body: payload.formData
+    });
+
+    if (!response.ok) {
+      throw new Error(`Contact form request failed with ${response.status}`);
+    }
+
+    form.reset();
+
+    if (status) {
+      status.textContent = "Thanks! Your message has been sent. I’ll get back to you as soon as I can.";
+    }
+  } catch (err) {
+    if (status) {
+      status.textContent = "Something went wrong and your message was not sent. Please try again in a minute.";
+    }
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+    }
+  }
+
+  // Basin receives the field named "email"; keep payload.replyTo as the future mailer hook.
+  return payload;
+}
+
+document.addEventListener("submit", e => {
+  const form = e.target.closest("[data-contact-form]");
+  if (!form) return;
+
+  e.preventDefault();
+  submitContactForm(form);
+});
+
+
 /* START MENU */
 const startBtn = document.getElementById("start-btn");
 const startMenu = document.getElementById("start-menu");
@@ -426,8 +601,7 @@ if (startBtn && startMenu) {
       !startMenu.contains(e.target) &&
       e.target !== startBtn
     ) {
-      startMenu.style.display = "none";
-      startBtn.classList.remove("active");
+      closeStartMenu();
     }
   });
 
@@ -436,35 +610,55 @@ if (startBtn && startMenu) {
 
     if (!link) return;
 
-    const href = link.getAttribute("href");
+    if (link.dataset.staticId || link.dataset.windowId) {
+      e.preventDefault();
+      launchWindowFromElement(link);
+      closeStartMenu();
+      return;
+    }
 
-    if (href === "#") {
+    if (link.getAttribute("href") === "#") {
       e.preventDefault();
       return;
     }
 
-    startMenu.style.display = "none";
-    startBtn.classList.remove("active");
+    closeStartMenu();
+  });
+
+  startMenu.addEventListener("keydown", e => {
+    const link = e.target.closest("a");
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closeStartMenu();
+      startBtn.focus();
+      return;
+    }
+
+    if (e.key === " " && link && (link.dataset.staticId || link.dataset.windowId)) {
+      e.preventDefault();
+      launchWindowFromElement(link);
+      closeStartMenu();
+    } else if (e.key === " " && link) {
+      e.preventDefault();
+      link.click();
+    }
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && startMenu.style.display === "block") {
+      e.preventDefault();
+      closeStartMenu();
+      startBtn.focus();
+    }
   });
 }
 
 
-document.querySelectorAll(".desktop-icon[data-window-id]").forEach(icon => {
+document.querySelectorAll(".desktop-icon[data-static-id], .desktop-icon[data-window-id]").forEach(icon => {
   icon.addEventListener("click", e => {
     e.preventDefault();
-
-    const windowId = icon.dataset.windowId;
-    const existing = findWindowByKey("dynamic:" + windowId);
-
-    if (existing) {
-      activateWindow(existing, {
-        focus: true,
-        scroll: isMobileLayout()
-      });
-      return;
-    }
-
-    createDynamicWindow(icon);
+    launchWindowFromElement(icon);
   });
 });
 
@@ -600,24 +794,32 @@ document.body.appendChild(shutdownScreen);
 
 if (logoffLink) {
   logoffLink.addEventListener("click", () => {
-    if (startMenu) startMenu.style.display = "none";
-    if (startBtn) startBtn.classList.remove("active");
+    closeStartMenu();
 
     document.querySelectorAll(".app-window").forEach(win => {
-      win.style.display = "none";
-      win.classList.remove("active");
+      if (win.dataset.id) {
+        win.style.display = "none";
+        win.classList.remove("active", "minimizing", "restoring");
+      } else {
+        win.remove();
+      }
+
+      removeTaskButton(win);
+
+      if (mobileWindowObserver) {
+        mobileWindowObserver.unobserve(win);
+      }
+
+      mobileWindowRatios.delete(getWindowKey(win));
     });
 
-    document.querySelectorAll(".taskbar-btn").forEach(btn => {
-      btn.classList.remove("active");
-    });
+    syncActiveTaskbarToActiveWindow();
   });
 }
 
 if (shutdownLink) {
   shutdownLink.addEventListener("click", () => {
-    if (startMenu) startMenu.style.display = "none";
-    if (startBtn) startBtn.classList.remove("active");
+    closeStartMenu();
     shutdownScreen.style.display = "flex";
   });
 }

@@ -25,7 +25,7 @@
 <!-- SITE NAME / note on the top right -->
 <div class="desktop-note">
     <br>
-    <img src="/images/computer.webp" alt="x" style="filter:grayscale(100%);opacity:0.8;">
+    <img src="images/computer.webp" alt="x" style="filter:grayscale(100%);opacity:0.8;">
     <br>
     <br>
     <span class="desktop-note-welcome">welcome to</span>
@@ -44,8 +44,8 @@
 <!-- DESKTOP ICONS -->
 <div class="desktop-icons">
     <!-- Normal desktop icon -->
-    <a href="#" class="desktop-icon">
-        <img src="/images/pixelarticons-master/svg/sparkles.svg" alt="home"> Hello
+    <a href="#hello" class="desktop-icon" data-static-id="hello">
+        <img src="images/pixelarticons-master/svg/sparkles.svg" alt="home"> Hello
     </a>
 
    <!-- Dynamic desktop icon: opens hidden div #window-about.
@@ -59,27 +59,37 @@ I added data-left and data-top here as an example. Delete them if you want this 
        data-left="475"
        data-top="350" 
        data-source="window-about">
-        <img src="/images/pixelarticons-master/svg/info-box.svg" alt="about"> About
+        <img src="images/pixelarticons-master/svg/info-box.svg" alt="about"> About
     </a>
 
     <!-- Normal desktop icon -->
-    <a href="#" class="desktop-icon">
-        <img src="/images/pixelarticons-master/svg/briefcase.svg" alt="media"> Work
+    <a href="#work" class="desktop-icon"
+       data-window-id="work"
+       data-title="Work"
+       data-width="360"
+       data-height="300"
+       data-source="window-work">
+        <img src="images/pixelarticons-master/svg/briefcase.svg" alt="media"> Work
     </a>
 
     <!-- Normal desktop icon -->
-    <a href="#" class="desktop-icon">
-        <img src="/images/pixelarticons-master/svg/mouse.svg" alt="resources"> Projects
+    <a href="#projects" class="desktop-icon"
+       data-window-id="projects"
+       data-title="Projects"
+       data-width="360"
+       data-height="280"
+       data-source="window-projects">
+        <img src="images/pixelarticons-master/svg/mouse.svg" alt="resources"> Projects
     </a>
 
-    <!-- Dynamic desktop icon: opens hidden div #window-credits -->
-    <a href="#credits" class="desktop-icon" 
-       data-window-id="credits" 
-       data-title="Credits" 
-       data-width="200" 
-       data-height="200" 
-       data-source="window-credits">
-        <img src="/images/pixelarticons-master/svg/link.svg" alt="credits"> Links
+    <!-- Dynamic desktop icon: opens hidden div #window-links -->
+    <a href="#links" class="desktop-icon"
+       data-window-id="links"
+       data-title="Links"
+       data-width="300"
+       data-height="240"
+       data-source="window-links">
+        <img src="images/pixelarticons-master/svg/link.svg" alt="links"> Links
     </a>
 
     <!-- Dynamic desktop icon: opens hidden div #window-paint -->
@@ -89,7 +99,7 @@ I added data-left and data-top here as an example. Delete them if you want this 
        data-width="500" 
        data-height="500" 
        data-source="window-paint">
-        <img src="/images/pixelarticons-master/svg/magic-edit.svg" alt="paint"> Paint
+        <img src="images/pixelarticons-master/svg/magic-edit.svg" alt="paint"> Paint
     </a>
 
 
@@ -197,7 +207,7 @@ A team to build with.
     <div class="window-content">
         <div class="content-box">
 
-            <img class="window-img" src="/images/flowergif.gif" alt="flower">
+            <img class="window-img" src="images/flowergif.gif" alt="flower">
 
 
         </div>
@@ -328,6 +338,83 @@ A team to build with.
     <iframe src="https://jspaint.app" width="450" height="430" style="border:0;"></iframe>
 </div>
 
+<div id="window-work" class="window-source">
+    <b>Selected work</b><br><br>
+    A placeholder drawer for case studies, leadership notes, and product work. This window is wired into the desktop system now, so the content can be expanded later without changing the launcher.
+</div>
+
+<div id="window-projects" class="window-source">
+    <b>Projects</b><br><br>
+    Domingo<br>
+    Matta<br>
+    NettaOS<br><br>
+    More detail can live here when the project pages are ready.
+</div>
+
+<div id="window-links" class="window-source">
+    <b>Links</b><br><br>
+    <a href="https://example.com" target="_blank">Portfolio</a><br>
+    <a href="https://example.com" target="_blank">Writing</a><br>
+    <a href="https://example.com" target="_blank">Social</a>
+</div>
+
+<div id="window-franklin" class="window-source">
+    <div class="placeholder-image-window">
+        <b>Franklin.jpg</b><br><br>
+        Final image pending. For now, imagine a very good dog here.
+    </div>
+</div>
+
+<div id="window-tree-id" class="window-source">
+    <b>Tree ID</b><br><br>
+    Temporary placeholder for a future tree identification link or mini reference window.
+</div>
+
+<div id="window-favorite-things" class="window-source">
+    <b>Favorite things</b><br><br>
+    Jazz on long drives<br>
+    Wildflowers<br>
+    Soft old software<br>
+    Really good notebooks<br>
+    Skincare formulas that finally behave
+</div>
+
+<template id="window-contact" class="window-source">
+    <form class="contact-form"
+          action="https://usebasin.com/f/68ec7ce24035"
+          method="POST"
+          enctype="multipart/form-data"
+          data-contact-form>
+        <p class="contact-intro">I’d love to hear from you.</p>
+
+        <div class="field-row-stacked">
+            <label for="contact-name">Name</label>
+            <input id="contact-name" name="name" type="text" autocomplete="name" required>
+        </div>
+
+        <div class="field-row-stacked">
+            <label for="contact-email">Email</label>
+            <input id="contact-email" name="email" type="email" autocomplete="email" required>
+        </div>
+
+        <div class="field-row-stacked">
+            <label for="contact-message">Message</label>
+            <textarea id="contact-message" name="message" rows="8" required></textarea>
+        </div>
+
+        <div class="contact-honeypot" aria-hidden="true">
+            <label for="contact-website">Website</label>
+            <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="contact-actions">
+            <button type="submit" class="default">Submit</button>
+        </div>
+
+        <p class="contact-status" role="status" aria-live="polite" data-contact-status></p>
+    </form>
+</template>
+
 
     <!-- This is the place where you can add more hidden windows. -->
 
@@ -354,177 +441,193 @@ A team to build with.
     </div>
 
     <ul class="sm-list">
-         <li class="sm-item has-sub">
+        <li class="sm-item has-sub">
             <a class="sm-link" href="#" onclick="return false;">
-                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/app-windows.svg">
+                <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/app-windows.svg">
                 <span class="sm-text">Programs</span>
                 <span class="sm-arrow">▶</span>
             </a>
 
             <ul class="sm-sub" role="menu">
                 <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/music.svg">
+                    <a class="sm-link" href="#cdplayer" data-static-id="cdplayer">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/music.svg">
                         <span class="sm-text">Music</span>
                     </a>
                 </li>
                 <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/image.svg">
+                    <a class="sm-link" href="#image" data-static-id="image">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/image.svg">
                         <span class="sm-text">Photos</span>
                     </a>
                 </li>
                 <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/magic-edit.svg">
+                    <a class="sm-link" href="#paint"
+                       data-window-id="paint"
+                       data-title="Paint"
+                       data-width="500"
+                       data-height="500"
+                       data-source="window-paint">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/magic-edit.svg">
                         <span class="sm-text">Paint</span>
                     </a>
                 </li>
             </ul>
         </li>
-      
 
         <li class="sm-item has-sub">
             <a class="sm-link" href="#" onclick="return false;">
-                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/notes.svg">
+                <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/notes.svg">
                 <span class="sm-text">Documents</span>
                 <span class="sm-arrow">▶</span>
             </a>
 
             <ul class="sm-sub" role="menu">
                 <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/sparkles.svg">
+                    <a class="sm-link" href="#hello" data-static-id="hello">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/sparkles.svg">
                         <span class="sm-text">Hello.txt</span>
                     </a>
                 </li>
                 <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/alien.svg">
+                    <a class="sm-link" href="#readme" data-static-id="readme">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/alien.svg">
                         <span class="sm-text">Netta.txt</span>
                     </a>
                 </li>
                 <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/info-box.svg">
+                    <a class="sm-link" href="#about"
+                       data-window-id="about"
+                       data-title="About.txt"
+                       data-width="280"
+                       data-height="324"
+                       data-left="475"
+                       data-top="350"
+                       data-source="window-about">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/info-box.svg">
                         <span class="sm-text">About.txt</span>
                     </a>
                 </li>
                 <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/briefcase.svg">
+                    <a class="sm-link" href="#work"
+                       data-window-id="work"
+                       data-title="Work"
+                       data-width="360"
+                       data-height="300"
+                       data-source="window-work">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/briefcase.svg">
                         <span class="sm-text">Work</span>
                     </a>
                 </li>
                 <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/mouse.svg">
+                    <a class="sm-link" href="#projects"
+                       data-window-id="projects"
+                       data-title="Projects"
+                       data-width="360"
+                       data-height="280"
+                       data-source="window-projects">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/mouse.svg">
                         <span class="sm-text">Projects</span>
                     </a>
                 </li>
                 <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/link.svg">
+                    <a class="sm-link" href="#links"
+                       data-window-id="links"
+                       data-title="Links"
+                       data-width="300"
+                       data-height="240"
+                       data-source="window-links">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/link.svg">
                         <span class="sm-text">Links</span>
                     </a>
                 </li>
             </ul>
         </li>
 
-
         <li class="sm-item has-sub">
             <a class="sm-link" href="#" onclick="return false;">
-                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/heart.svg">
+                <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/heart.svg">
                 <span class="sm-text">Favorites</span>
                 <span class="sm-arrow">▶</span>
             </a>
 
             <ul class="sm-sub" role="menu">
                 <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/dog.svg">
+                    <a class="sm-link" href="#franklin"
+                       data-window-id="franklin"
+                       data-title="Franklin.jpg"
+                       data-width="280"
+                       data-height="260"
+                       data-source="window-franklin">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/dog.svg">
                         <span class="sm-text">Franklin.jpg</span>
                     </a>
                 </li>
                 <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/leaf.svg">
+                    <a class="sm-link" href="#tree-id"
+                       data-window-id="tree-id"
+                       data-title="Tree ID"
+                       data-width="280"
+                       data-height="220"
+                       data-source="window-tree-id">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/leaf.svg">
                         <span class="sm-text">Tree ID</span>
                     </a>
                 </li>
-                 <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/list-box.svg">
+                <li class="sm-item">
+                    <a class="sm-link" href="#favorite-things"
+                       data-window-id="favorite-things"
+                       data-title="Favorite things.txt"
+                       data-width="300"
+                       data-height="240"
+                       data-source="window-favorite-things">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/list-box.svg">
                         <span class="sm-text">Favorite things.txt</span>
                     </a>
                 </li>
             </ul>
         </li>
-      
-      
 
-        <li class="sm-item has-sub">
-            <a class="sm-link" href="#" onclick="return false;">
-                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/images.svg">
-                <span class="sm-text">Media</span>
-                <span class="sm-arrow">▶</span>
-            </a>
-          
-
-            <ul class="sm-sub" role="menu">
-                <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/music.svg">
-                        <span class="sm-text">Music</span>
-                    </a>
-                </li>
-                <li class="sm-item">
-                    <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/camera.svg">
-                        <span class="sm-text">Photos</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-      
         <li class="sm-sep" aria-hidden="true"></li>
-      
 
         <li class="sm-item">
-            <a class="sm-link" href="mailto:you@example.com">
-                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/mail.svg">
+            <a class="sm-link" href="#contact"
+               data-window-id="contact"
+               data-title="Contact Netta"
+               data-width="400"
+               data-height="390"
+               data-source="window-contact">
+                <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/mail.svg">
                 <span class="sm-text">Email me</span>
             </a>
         </li>
         <li class="sm-item">
-            <a class="sm-link" href="mailto:you@example.com">
-                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/users.svg">
+            <a class="sm-link" href="#credits"
+               data-window-id="credits"
+               data-title="Credits"
+               data-width="240"
+               data-height="220"
+               data-source="window-credits">
+                <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/users.svg">
                 <span class="sm-text">Credits</span>
             </a>
         </li>
-      
 
         <li class="sm-sep" aria-hidden="true"></li>
-      
-      
 
         <li class="sm-item">
             <a class="sm-link" href="#" id="logoff-link" onclick="return false;">
-                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/logout.svg">
+                <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/logout.svg">
                 <span class="sm-text">Log Off</span>
             </a>
         </li>
-      
 
         <li class="sm-item">
             <a class="sm-link" href="#" id="shutdown-link" onclick="return false;">
-                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/square-power.svg">
+                <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/square-power.svg">
                 <span class="sm-text">Shut Down...</span>
             </a>
         </li>
-      
-      
     </ul>
 </div>
   
