@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>itiOS - HTML with external CSS and JS files </title>
+<title>Netta Selene's Desktop</title>
+<meta name="description" content="Design leader, founder, and builder. Explore NettaOS, an interactive desktop featuring selected work, Domingo, Matta, writing, and more.">
+
 
 <!-- Remember to change this address to your own style.css. -->
 <link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.ico" />
 
 <!-- The JS is at the bottom of the page. -->
 
@@ -18,19 +21,20 @@
   
 
 <body>
-    
+
 <!-- SITE NAME / note on the top right -->
 <div class="desktop-note">
     <br>
-    <img src="https://itinerae.neocities.org/premium/demo/itiOS/computer.webp" alt="x" style="filter:grayscale(100%);opacity:0.8;">
+    <img src="/images/computer.webp" alt="x" style="filter:grayscale(100%);opacity:0.8;">
     <br>
     <br>
     <span class="desktop-note-welcome">welcome to</span>
-    <span class="desktop-note-title">my website</span>
-    <span class="desktop-note-refresh"><a href="#" onclick="location.reload(); return false;">refresh page</a></span>
+    <span class="desktop-note-title">Netta's desktop</span>
+    <span class="desktop-note-refresh"><a href="#" onclick="location.reload(); return false;">reset desktop</a></span>
     <span class="desktop-note-line"></span>
     <span class="desktop-note-text">
-    A description, chatbox or some other content. You can also delete this section if you want.
+    Some windows are visible.<br><br>
+    Others are waiting to be discovered.
   </span>
 </div>
   
@@ -41,7 +45,7 @@
 <div class="desktop-icons">
     <!-- Normal desktop icon -->
     <a href="#" class="desktop-icon">
-        <img src="https://itinerae.neocities.org/98/icons/monitor.png" alt="home"> Home
+        <img src="/images/pixelarticons-master/svg/sparkles.svg" alt="home"> Hello
     </a>
 
    <!-- Dynamic desktop icon: opens hidden div #window-about.
@@ -49,28 +53,23 @@ I added data-left and data-top here as an example. Delete them if you want this 
   
     <a href="#about" class="desktop-icon" 
        data-window-id="about" 
-       data-title="About me" 
-       data-width="240" 
-       data-height="285" 
-       data-left="500"
-       data-top="140" 
+       data-title="About.txt" 
+       data-width="280" 
+       data-height="324" 
+       data-left="475"
+       data-top="350" 
        data-source="window-about">
-        <img src="https://itinerae.neocities.org/98/icons/about.png" alt="about"> About me
+        <img src="/images/pixelarticons-master/svg/info-box.svg" alt="about"> About
     </a>
 
     <!-- Normal desktop icon -->
     <a href="#" class="desktop-icon">
-        <img src="https://itinerae.neocities.org/98/icons/notebook.png" alt="notes"> Blog
+        <img src="/images/pixelarticons-master/svg/briefcase.svg" alt="media"> Work
     </a>
 
     <!-- Normal desktop icon -->
     <a href="#" class="desktop-icon">
-        <img src="https://itinerae.neocities.org/98/icons/links.png" alt="media"> Links
-    </a>
-
-    <!-- Normal desktop icon -->
-    <a href="#" class="desktop-icon">
-        <img src="https://itinerae.neocities.org/98/icons/downloads.png" alt="resources"> Resources
+        <img src="/images/pixelarticons-master/svg/mouse.svg" alt="resources"> Projects
     </a>
 
     <!-- Dynamic desktop icon: opens hidden div #window-credits -->
@@ -80,7 +79,7 @@ I added data-left and data-top here as an example. Delete them if you want this 
        data-width="200" 
        data-height="200" 
        data-source="window-credits">
-        <img src="https://itinerae.neocities.org/98/icons/infocredits.png" alt="credits"> Credits
+        <img src="/images/pixelarticons-master/svg/link.svg" alt="credits"> Links
     </a>
 
     <!-- Dynamic desktop icon: opens hidden div #window-paint -->
@@ -90,7 +89,7 @@ I added data-left and data-top here as an example. Delete them if you want this 
        data-width="500" 
        data-height="500" 
        data-source="window-paint">
-        <img src="https://itinerae.neocities.org/98/icons/paint.png" alt="paint"> Paint
+        <img src="/images/pixelarticons-master/svg/magic-edit.svg" alt="paint"> Paint
     </a>
 
 
@@ -108,9 +107,10 @@ I added data-left and data-top here as an example. Delete them if you want this 
 <!-- STATIC WINDOWS (these are visible when someone enters the page) -->
   
   
-<div class="app-window" data-id="hello" style="top:40px; left:160px; width: 300px; height: 140px;">
+<!-- Hello -->  
+<div class="app-window" data-id="hello" style="top:40px; left:160px; width: 340px; height: 154px;">
     <div class="window-header">
-        <div class="window-title">Hello</div>
+        <div class="window-title">Hello.txt</div>
         <div class="window-buttons">
             <button class="btn-min" aria-label="Minimize"></button>
             <button class="btn-max" aria-label="Maximize"></button>
@@ -119,17 +119,17 @@ I added data-left and data-top here as an example. Delete them if you want this 
     </div>
     <div class="window-content">
         <div class="content-box">
-            <img src="https://itinerae.neocities.org/premium/demo/itiOS/clippy.gif" alt="x" width="70" style="float:left;margin-right:8px;filter:grayscale(100%);opacity:0.7;"> Hello there! This layout is a bit more complicated than my previous layouts, so I will write some important info and instructions here.
+            <img src="images/hs.gif" alt="x" width="70" style="float:left;margin-right:8px;filter:grayscale(100%);opacity:0.7;"> Hi, I’m Netta. This desktop is a pretty good summary of my brain. Organized enough to find things. Curious enough to keep opening new windows.
         </div>
     </div>
 </div>
   
   
   
-
-<div class="app-window" data-id="readme" style=" top:200px; left:200px; width: 500px; height: 300px;">
+<!-- Read me --> 
+<div class="app-window" data-id="readme" style=" top:220px; left:200px; width: 500px; height: 300px;">
     <div class="window-header">
-        <div class="window-title">Read me</div>
+        <div class="window-title">Netta.txt</div>
         <div class="window-buttons">
             <button class="btn-min" aria-label="Minimize"></button>
             <button class="btn-max" aria-label="Maximize"></button>
@@ -139,47 +139,42 @@ I added data-left and data-top here as an example. Delete them if you want this 
     <div class="window-content">
         <div class="content-box">
 
-<ul>
+<b>Name:</b><br>
+Netta Selene<br><br>
 
+<b>Location:</b><br>
+Brooklyn, NY<br><br>
 
-<li>This layout includes :<br>
-<b>/fonts<br>
-- index.html (using external files for CSS and JS) <br>
-- index_with_everything.html (CSS, HTML and JS on the same page) <br>
-- style.css <br>
-- script.js</b><br>
-- quick instructions.txt<br>
-- user manual.txt</li>
-    
-  
+<b>Role:</b><br>
+Design leader<br>
+Founder<br>
+Builder<br><br>
 
-<li>All windows are <b>draggable</b>. You can <b>minimize</b> them to the taskbar or <b>close</b> them. The <b>maximize</b> button is included for style only and is disabled in this layout.</li>
+<b>Building:</b><br>
+Domingo<br>
+Matta<br>
+Whatever comes next<br><br>
 
-<li>You can change the icons to your own liking. The icons used here are from <a href="https://pixelarticons.com/" target="_blank">Pixel art icons</a>. I have converted SVGs to PNGs <a href="https://www.svgviewer.dev/svg-to-png">here.</a>
-<br><br> 
-You can find classic <b>Windows icons</b> <a href="https://oldwindowsicons.tumblr.com/tagged/windows%2098" target="_blank">here</a>.<br><br>
-<a href="https://artwork.neocities.org/oldweb" target="_blank">This site</a> also has a great collection of <b>old web icons</b>.<br><br>
-<b>Note:</b> You may need to <i>crop</i> some icons if they appear too small.</li>
+<b>Experience:</b><br>
+20+ years designing products and leading teams<br><br>
 
-<li>The icons on the left side can behave as <b>normal links</b> opening another page.</li>
+<b>Previously:</b><br>
+Airbnb<br>
+Etsy<br>
+Square<br>
+(and a few others)<br><br>
 
-<li>
-  Or they can open <b>windows like this one</b>. Test by clicking "about me" "credits" or "paint".<br><br> 
-Popup window content is edited in the hidden HTML sections near the bottom of the page.<br><br> 
-  Windows can be any size you want. <br><br> 
-Windows open in random positions by default. You can also make the window open at a specific location (instructions are in the user manual).</li>
+<b>Guiding principle:</b><br>
+Technology should feel more human.<br><br>
 
-<li>The links in the <b>Start</b> menu are normal links.</li>
+<b>Outside of work:</b><br>
+Music<br>
+Skincare<br>
+Nature<br>
+Long drives<br><br>
 
-<li> To add music to the CD player, you need a direct audio file link, usually ending in <code>.mp3</code>. </li>
-
-<li> You can edit this layout as much as you want <u>if you are comfortable editing HTML/CSS</u>. </li>
-
-<li>Please read the user manual carefully.</li>
-            
-          
-</ul>
-          
+<b>Looking for:</b><br>
+A team to build with.          
           
           
         </div>
@@ -189,10 +184,10 @@ Windows open in random positions by default. You can also make the window open a
   
   
 
-
+<!-- image --> 
 <div class="app-window" data-id="image" style="width: 360px; height: 240px; top:100px; left:780px;">
     <div class="window-header">
-        <div class="window-title">Image example</div>
+        <div class="window-title">KeepBlooming.gif</div>
         <div class="window-buttons">
             <button class="btn-min" aria-label="Minimize"></button>
             <button class="btn-max" aria-label="Maximize"></button>
@@ -202,7 +197,7 @@ Windows open in random positions by default. You can also make the window open a
     <div class="window-content">
         <div class="content-box">
 
-            <img class="window-img" src="https://itinerae.neocities.org/premium/demo/itiOS/flowergif.gif" alt="flower">
+            <img class="window-img" src="/images/flowergif.gif" alt="flower">
 
 
         </div>
@@ -213,7 +208,7 @@ Windows open in random positions by default. You can also make the window open a
   
   
   
-
+<!-- CD Player --> 
 <div class="app-window cd-player-window" data-id="cdplayer" style="width: 360px; height: 160px; top:400px; left:790px;">
     <div class="window-header">
         <div class="window-title">CD player</div>
@@ -265,13 +260,14 @@ Windows open in random positions by default. You can also make the window open a
 
 
 <!-- HIDDEN DYNAMIC WINDOW CONTENT (these will open when you click an icon) -->
-  
+
+<!-- About me -->   
 <div id="window-about" class="window-source">
     <div class="profile-card">
 
         <div class="profile-top">
 
-            <div class="profile-name">Your name
+            <div class="profile-name">Notes from Netta
 
                 <img src="https://64.media.tumblr.com/f06edd7ec36abd8df38c9854a9f172f9/086782c2d60a85fd-63/s75x75_c1/11f192e23028512a3e2befa3d6e4f4ef8361fb1c.gifv" style="opacity:0.6;" alt="x"> </div>
 
@@ -279,7 +275,11 @@ Windows open in random positions by default. You can also make the window open a
 
             <p class="profile-text">
 
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent quis posuere enim, in convallis augue. Ut ac vehicula neque, quis accumsan dolor. Sed ullamcorper lacus sit amet nulla mollis mattis. Fusce finibus augue massa, a imperdiet justo ullamcorper vitae.
+                I’ve always been curious about how things work.<br><br>
+                As a kid, that meant carrying around a sketchbook and trying to recreate anything that caught my eye. Over time, drawing turned into designing interfaces, leading teams, starting companies, formulating skincare, and, more recently, writing software.<br><br>
+                Looking back, the medium has changed far more than the motivation. I’ve always been happiest making thoughtful things that help people in some way.<br><br>
+                Leaving tech to build Domingo taught me that the work I love isn’t tied to an industry. It’s the process of building something from nothing, learning relentlessly, and caring deeply about the people on the other side.<br><br>
+                Building Matta reminded me how much I missed making software. More importantly, it reminded me that I’m happiest when I’m learning, making, and sharing what I discover along the way.
             </p>
         </div>
 
@@ -290,22 +290,22 @@ Windows open in random positions by default. You can also make the window open a
             </div>
             <div class="profile-row">
                 <b>listening</b>
-                <span>spotify</span>
+                <span>raffy bushman</span>
             </div>
             <div class="profile-row">
                 <b>working on</b>
-                <span>this website</span>
+                <span>my sleep</span>
             </div>
             <div class="profile-row">
                 <b>online since</b>
-                <span>2002</span>
+                <span>1999</span>
             </div>
         </div>
 
         <div class="profile-links">
             <a href="https://example.com" target="_blank">neocities.</a>
             <a href="https://example.com" target="_blank">bluesky.</a>
-            <a href="mailto:you@example.com">email.</a>
+            <a href="mailto:you@example.com">email</a>
         </div>
 
     </div>
@@ -350,37 +350,112 @@ Windows open in random positions by default. You can also make the window open a
 <!-- START MENU -->
 <div id="start-menu" role="menu" aria-label="Start menu">
     <div class="start-sidebar">
-        <span>My Website</span>
+        <span>Netta98</span>
     </div>
 
     <ul class="sm-list">
-        <li class="sm-item">
-            <a class="sm-link" href="#">
-                <img class="sm-ico" alt="" src="https://itinerae.neocities.org/98/icons/home2.png">
-                <span class="sm-text">Home</span>
-            </a>
-        </li>
-      
-      
-
-        <li class="sm-item has-sub">
+         <li class="sm-item has-sub">
             <a class="sm-link" href="#" onclick="return false;">
-                <img class="sm-ico" alt="" src="https://itinerae.neocities.org/98/icons/notes.png">
-                <span class="sm-text">Writing</span>
+                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/app-windows.svg">
+                <span class="sm-text">Programs</span>
                 <span class="sm-arrow">▶</span>
             </a>
 
             <ul class="sm-sub" role="menu">
                 <li class="sm-item">
                     <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="https://itinerae.neocities.org/98/icons/list.png">
-                        <span class="sm-text">Lists</span>
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/music.svg">
+                        <span class="sm-text">Music</span>
                     </a>
                 </li>
                 <li class="sm-item">
                     <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="https://itinerae.neocities.org/98/icons/heart.png">
-                        <span class="sm-text">Notes</span>
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/image.svg">
+                        <span class="sm-text">Photos</span>
+                    </a>
+                </li>
+                <li class="sm-item">
+                    <a class="sm-link" href="#">
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/magic-edit.svg">
+                        <span class="sm-text">Paint</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+      
+
+        <li class="sm-item has-sub">
+            <a class="sm-link" href="#" onclick="return false;">
+                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/notes.svg">
+                <span class="sm-text">Documents</span>
+                <span class="sm-arrow">▶</span>
+            </a>
+
+            <ul class="sm-sub" role="menu">
+                <li class="sm-item">
+                    <a class="sm-link" href="#">
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/sparkles.svg">
+                        <span class="sm-text">Hello.txt</span>
+                    </a>
+                </li>
+                <li class="sm-item">
+                    <a class="sm-link" href="#">
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/alien.svg">
+                        <span class="sm-text">Netta.txt</span>
+                    </a>
+                </li>
+                <li class="sm-item">
+                    <a class="sm-link" href="#">
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/info-box.svg">
+                        <span class="sm-text">About.txt</span>
+                    </a>
+                </li>
+                <li class="sm-item">
+                    <a class="sm-link" href="#">
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/briefcase.svg">
+                        <span class="sm-text">Work</span>
+                    </a>
+                </li>
+                <li class="sm-item">
+                    <a class="sm-link" href="#">
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/mouse.svg">
+                        <span class="sm-text">Projects</span>
+                    </a>
+                </li>
+                <li class="sm-item">
+                    <a class="sm-link" href="#">
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/link.svg">
+                        <span class="sm-text">Links</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+
+        <li class="sm-item has-sub">
+            <a class="sm-link" href="#" onclick="return false;">
+                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/heart.svg">
+                <span class="sm-text">Favorites</span>
+                <span class="sm-arrow">▶</span>
+            </a>
+
+            <ul class="sm-sub" role="menu">
+                <li class="sm-item">
+                    <a class="sm-link" href="#">
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/dog.svg">
+                        <span class="sm-text">Franklin.jpg</span>
+                    </a>
+                </li>
+                <li class="sm-item">
+                    <a class="sm-link" href="#">
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/leaf.svg">
+                        <span class="sm-text">Tree ID</span>
+                    </a>
+                </li>
+                 <li class="sm-item">
+                    <a class="sm-link" href="#">
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/list-box.svg">
+                        <span class="sm-text">Favorite things.txt</span>
                     </a>
                 </li>
             </ul>
@@ -390,7 +465,7 @@ Windows open in random positions by default. You can also make the window open a
 
         <li class="sm-item has-sub">
             <a class="sm-link" href="#" onclick="return false;">
-                <img class="sm-ico" alt="" src="https://itinerae.neocities.org/98/icons/media.png">
+                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/images.svg">
                 <span class="sm-text">Media</span>
                 <span class="sm-arrow">▶</span>
             </a>
@@ -399,25 +474,33 @@ Windows open in random positions by default. You can also make the window open a
             <ul class="sm-sub" role="menu">
                 <li class="sm-item">
                     <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="https://itinerae.neocities.org/98/icons/headphones.png">
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/music.svg">
                         <span class="sm-text">Music</span>
                     </a>
                 </li>
                 <li class="sm-item">
                     <a class="sm-link" href="#">
-                        <img class="sm-ico" alt="" src="https://itinerae.neocities.org/98/icons/camera.png">
+                        <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/camera.svg">
                         <span class="sm-text">Photos</span>
                     </a>
                 </li>
             </ul>
         </li>
+
       
+        <li class="sm-sep" aria-hidden="true"></li>
       
 
         <li class="sm-item">
             <a class="sm-link" href="mailto:you@example.com">
-                <img class="sm-ico" alt="" src="https://itinerae.neocities.org/98/icons/email.png">
+                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/mail.svg">
                 <span class="sm-text">Email me</span>
+            </a>
+        </li>
+        <li class="sm-item">
+            <a class="sm-link" href="mailto:you@example.com">
+                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/users.svg">
+                <span class="sm-text">Credits</span>
             </a>
         </li>
       
@@ -428,7 +511,7 @@ Windows open in random positions by default. You can also make the window open a
 
         <li class="sm-item">
             <a class="sm-link" href="#" id="logoff-link" onclick="return false;">
-                <img class="sm-ico" alt="" src="https://itinerae.neocities.org/98/icons/logout.png">
+                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/logout.svg">
                 <span class="sm-text">Log Off</span>
             </a>
         </li>
@@ -436,7 +519,7 @@ Windows open in random positions by default. You can also make the window open a
 
         <li class="sm-item">
             <a class="sm-link" href="#" id="shutdown-link" onclick="return false;">
-                <img class="sm-ico" alt="" src="https://itinerae.neocities.org/98/icons/shutdown.png">
+                <img class="sm-ico" alt="" src="/images/pixelarticons-master/svg/square-power.svg">
                 <span class="sm-text">Shut Down...</span>
             </a>
         </li>

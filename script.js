@@ -1,18 +1,249 @@
 let topZ = 10;
 const taskbar = document.getElementById("taskbar-windows");
 const mobileLayoutQuery = window.matchMedia("(max-width: 820px)");
+const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const isMobileLayout = () => mobileLayoutQuery.matches;
+const taskButtonsByWindowKey = new Map();
+let mobileWindowObserver = null;
+const mobileWindowRatios = new Map();
+let mobileActiveLockKey = "";
+let mobileActiveLockTimer = 0;
+let mobileScrollTrackingEnabled = false;
+
+function keyToDomId(key) {
+  return "app-window-" + key.replace(/[^a-z0-9_-]/gi, "-");
+}
+
+function getWindowKey(win) {
+  if (win.dataset.windowKey) return win.dataset.windowKey;
+
+  if (win.dataset.windowId) {
+    win.dataset.windowKey = "dynamic:" + win.dataset.windowId;
+  } else if (win.dataset.id) {
+    win.dataset.windowKey = "static:" + win.dataset.id;
+  } else {
+    const title = win.querySelector(".window-title")?.textContent.trim() || "window";
+    win.dataset.windowKey = "window:" + title.toLowerCase().replace(/\s+/g, "-");
+  }
+
+  return win.dataset.windowKey;
+}
+
+function findWindowByKey(key) {
+  return document.querySelector(`.app-window[data-window-key="${CSS.escape(key)}"]`);
+}
+
+function hasTaskButton(win) {
+  return taskButtonsByWindowKey.has(getWindowKey(win));
+}
+
+function isOpenWindow(win) {
+  return !!win && document.body.contains(win) && hasTaskButton(win);
+}
+
+function isVisibleOpenWindow(win) {
+  return isOpenWindow(win) && getComputedStyle(win).display !== "none";
+}
+
+function setActiveTaskButton(key) {
+  document.querySelectorAll(".taskbar-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.windowKey === key);
+  });
+}
+
+function setActiveWindowClass(key) {
+  document.querySelectorAll(".app-window").forEach(win => {
+    win.classList.toggle("active", win.dataset.windowKey === key && isVisibleOpenWindow(win));
+  });
+}
+
+function getHighestOpenWindow() {
+  const windows = Array.from(document.querySelectorAll(".app-window"))
+    .filter(isVisibleOpenWindow);
+
+  const activeWindow = windows.find(win => win.classList.contains("active"));
+  if (activeWindow) return activeWindow;
+
+  return windows
+    .map(win => ({
+      win,
+      z: Number.parseInt(win.style.zIndex || getComputedStyle(win).zIndex, 10)
+    }))
+    .sort((a, b) => (Number.isFinite(b.z) ? b.z : 0) - (Number.isFinite(a.z) ? a.z : 0))[0]?.win || null;
+}
+
+function syncActiveTaskbarToActiveWindow() {
+  const focusedWindow = document.activeElement?.closest?.(".app-window");
+  const activeWindow = isVisibleOpenWindow(focusedWindow) ? focusedWindow : getHighestOpenWindow();
+
+  if (activeWindow) {
+    setActiveWindowClass(getWindowKey(activeWindow));
+    setActiveTaskButton(getWindowKey(activeWindow));
+  } else {
+    setActiveWindowClass("");
+    setActiveTaskButton("");
+  }
+}
+
+function lockMobileActiveTaskButton(key) {
+  if (!isMobileLayout()) return;
+
+  mobileActiveLockKey = key;
+  setActiveTaskButton(key);
+  clearTimeout(mobileActiveLockTimer);
+
+  mobileActiveLockTimer = setTimeout(() => {
+    mobileActiveLockKey = "";
+  }, reducedMotionQuery.matches ? 100 : 900);
+}
+
 const scrollWindowIntoView = win => {
   if (isMobileLayout()) {
-    win.scrollIntoView({ block: "start" });
+    win.scrollIntoView({
+      block: "start",
+      behavior: reducedMotionQuery.matches ? "auto" : "smooth"
+    });
   }
 };
+
+function focusWindow(win) {
+  if (!win) return;
+  win.focus({ preventScroll: true });
+}
+
+function activateWindow(win, options = {}) {
+  if (!win) return;
+
+  const key = getWindowKey(win);
+  const wasHidden = win.style.display === "none";
+
+  win.classList.remove("minimizing");
+  if (wasHidden) {
+    win.classList.add("restoring");
+  }
+
+  win.style.display = "flex";
+
+  topZ++;
+  win.style.zIndex = topZ;
+
+  document.querySelectorAll(".app-window").forEach(w => w.classList.remove("active"));
+  win.classList.add("active");
+  setActiveTaskButton(key);
+
+  if (options.focus !== false) {
+    focusWindow(win);
+  }
+
+  if (options.scroll) {
+    lockMobileActiveTaskButton(key);
+    scrollWindowIntoView(win);
+  }
+
+  if (wasHidden) {
+    requestAnimationFrame(() => {
+      win.classList.remove("restoring");
+    });
+  }
+}
+
+function getOrCreateTaskButton(key, title, options = {}) {
+  let taskBtn = taskButtonsByWindowKey.get(key);
+
+  if (!taskBtn) {
+    taskBtn = document.createElement("button");
+    taskBtn.type = "button";
+    taskBtn.className = "taskbar-btn";
+    taskBtn.dataset.windowKey = key;
+    taskBtn.textContent = title;
+
+    taskBtn.addEventListener("click", () => {
+      const win = findWindowByKey(key);
+
+      activateWindow(win, {
+        focus: true,
+        scroll: isMobileLayout()
+      });
+    });
+
+    taskbar.appendChild(taskBtn);
+    taskButtonsByWindowKey.set(key, taskBtn);
+  }
+
+  taskBtn.textContent = title;
+
+  if (options.windowCreated !== undefined) {
+    taskBtn.dataset.windowCreated = options.windowCreated ? "true" : "false";
+  }
+
+  return taskBtn;
+}
+
+function updateMobileWindowObserver() {
+  if (mobileWindowObserver) {
+    mobileWindowObserver.disconnect();
+    mobileWindowObserver = null;
+  }
+
+  mobileWindowRatios.clear();
+
+  if (!isMobileLayout() || !("IntersectionObserver" in window)) {
+    syncActiveTaskbarToActiveWindow();
+    return;
+  }
+
+  mobileWindowObserver = new IntersectionObserver(() => {
+    if (mobileActiveLockKey) {
+      setActiveTaskButton(mobileActiveLockKey);
+      return;
+    }
+
+    if (!mobileScrollTrackingEnabled) {
+      syncActiveTaskbarToActiveWindow();
+      return;
+    }
+
+    mobileWindowRatios.clear();
+
+    document.querySelectorAll(".app-window").forEach(win => {
+      if (!isVisibleOpenWindow(win)) return;
+
+      const rect = win.getBoundingClientRect();
+      const visible = Math.min(rect.bottom, document.body.clientHeight) - Math.max(rect.top, 0);
+      const ratio = Math.max(0, visible) / Math.max(1, rect.height);
+      mobileWindowRatios.set(getWindowKey(win), ratio);
+    });
+
+    const best = Array.from(mobileWindowRatios.entries())
+      .filter(([, ratio]) => ratio > 0)
+      .sort((a, b) => b[1] - a[1])[0];
+
+    if (best) {
+      setActiveWindowClass(best[0]);
+      setActiveTaskButton(best[0]);
+    }
+  }, {
+    root: document.body,
+    threshold: [0.2, 0.45, 0.7]
+  });
+
+  document.querySelectorAll(".app-window").forEach(win => {
+    if (isOpenWindow(win)) {
+      mobileWindowObserver.observe(win);
+    }
+  });
+
+  syncActiveTaskbarToActiveWindow();
+}
 
 /* SHARED WINDOW LOGIC
    Works for both static windows and dynamic windows. */
 function attachWindowLogic(win) {
   if (!win || win.dataset.windowReady === "true") return;
   win.dataset.windowReady = "true";
+  const windowKey = getWindowKey(win);
+  win.id = win.id || keyToDomId(windowKey);
+  win.tabIndex = -1;
 
   const bar = win.querySelector(".window-header");
   const btnMin = win.querySelector(".btn-min");
@@ -26,57 +257,29 @@ function attachWindowLogic(win) {
   let offsetY = 0;
 
   const title = titleEl.textContent.trim();
-
-  const taskBtn = document.createElement("button");
-  taskBtn.type = "button";
-  taskBtn.className = "taskbar-btn";
-  taskBtn.textContent = title;
-  taskbar.appendChild(taskBtn);
+  const taskBtn = getOrCreateTaskButton(windowKey, title, {
+    windowCreated: true
+  });
+  taskBtn.setAttribute("aria-controls", win.id);
 
   const bringToFront = () => {
-    topZ++;
-    win.style.zIndex = topZ;
-
-    document.querySelectorAll(".app-window").forEach(w => w.classList.remove("active"));
-    win.classList.add("active");
-
-    document.querySelectorAll(".taskbar-btn").forEach(btn => btn.classList.remove("active"));
-    taskBtn.classList.add("active");
+    activateWindow(win, { focus: false });
   };
 
- const showWindow = () => {
-  win.classList.remove("minimizing");
-  win.classList.add("restoring");
+  const hideWindow = () => {
+    win.classList.add("minimizing");
+    taskBtn.classList.remove("active");
+    win.classList.remove("active");
 
-  win.style.display = "flex";
-  bringToFront();
-  scrollWindowIntoView(win);
-
-  requestAnimationFrame(() => {
-    win.classList.remove("restoring");
-  });
-};
-
-const hideWindow = () => {
-  win.classList.add("minimizing");
-  taskBtn.classList.remove("active");
-  win.classList.remove("active");
-
-  setTimeout(() => {
-    win.style.display = "none";
-    win.classList.remove("minimizing");
-  }, 140);
-};
+    setTimeout(() => {
+      win.style.display = "none";
+      win.classList.remove("minimizing");
+      syncActiveTaskbarToActiveWindow();
+    }, 140);
+  };
 
   win.addEventListener("mousedown", bringToFront);
-
-  taskBtn.addEventListener("click", () => {
-    if (win.style.display === "none") {
-      showWindow();
-    } else {
-      hideWindow();
-    }
-  });
+  win.addEventListener("focusin", bringToFront);
 
   bar.addEventListener("mousedown", e => {
     if (isMobileLayout()) return;
@@ -116,10 +319,18 @@ const hideWindow = () => {
       e.stopPropagation();
       win.remove();
       taskBtn.remove();
+      taskButtonsByWindowKey.delete(windowKey);
+
+      if (mobileWindowObserver) {
+        mobileWindowObserver.unobserve(win);
+        mobileWindowRatios.delete(windowKey);
+      }
 
       if (win.dataset.id) {
         localStorage.removeItem("win-" + win.dataset.id);
       }
+
+      syncActiveTaskbarToActiveWindow();
     });
   }
 
@@ -138,7 +349,9 @@ const hideWindow = () => {
     });
   }
 
-  bringToFront();
+  if (mobileWindowObserver) {
+    mobileWindowObserver.observe(win);
+  }
 }
 
 /* STATIC WINDOWS */
@@ -150,6 +363,17 @@ document.querySelectorAll(".app-window").forEach(win => {
 
   attachWindowLogic(win);
 });
+
+initializeActiveWindow();
+
+function initializeActiveWindow() {
+  const helloWindow = document.querySelector('.app-window[data-id="hello"]');
+  const fallbackWindow = document.querySelector(".app-window");
+
+  activateWindow(helloWindow || fallbackWindow, {
+    focus: true
+  });
+}
 
 function saveWindowPosition(win) {
   const id = win.dataset.id;
@@ -230,22 +454,13 @@ document.querySelectorAll(".desktop-icon[data-window-id]").forEach(icon => {
     e.preventDefault();
 
     const windowId = icon.dataset.windowId;
-    const existing = document.querySelector(`.app-window[data-window-id="${CSS.escape(windowId)}"]`);
+    const existing = findWindowByKey("dynamic:" + windowId);
 
     if (existing) {
-      existing.style.display = "flex";
-      topZ++;
-      existing.style.zIndex = topZ;
-
-      document.querySelectorAll(".app-window").forEach(w => w.classList.remove("active"));
-      existing.classList.add("active");
-
-      document.querySelectorAll(".taskbar-btn").forEach(btn => btn.classList.remove("active"));
-      const existingTitle = existing.querySelector(".window-title").textContent.trim();
-      document.querySelectorAll(".taskbar-btn").forEach(btn => {
-        if (btn.textContent.trim() === existingTitle) btn.classList.add("active");
+      activateWindow(existing, {
+        focus: true,
+        scroll: isMobileLayout()
       });
-      scrollWindowIntoView(existing);
       return;
     }
 
@@ -253,7 +468,27 @@ document.querySelectorAll(".desktop-icon[data-window-id]").forEach(icon => {
   });
 });
 
-function createDynamicWindow(icon) {
+updateMobileWindowObserver();
+
+document.body.addEventListener("scroll", () => {
+  if (isMobileLayout()) {
+    mobileScrollTrackingEnabled = true;
+  }
+});
+
+if (mobileLayoutQuery.addEventListener) {
+  mobileLayoutQuery.addEventListener("change", () => {
+    mobileScrollTrackingEnabled = false;
+    updateMobileWindowObserver();
+  });
+} else {
+  mobileLayoutQuery.addListener(() => {
+    mobileScrollTrackingEnabled = false;
+    updateMobileWindowObserver();
+  });
+}
+
+function createDynamicWindow(icon, options = {}) {
   const windowId = icon.dataset.windowId;
   const title = icon.dataset.title || "Window";
   const width = parseInt(icon.dataset.width, 10) || 300;
@@ -265,6 +500,7 @@ function createDynamicWindow(icon) {
   const win = document.createElement("div");
   win.className = "app-window";
   win.dataset.windowId = windowId;
+  win.dataset.windowKey = "dynamic:" + windowId;
 
   win.style.width = width + "px";
   win.style.height = height + "px";
@@ -313,7 +549,14 @@ function createDynamicWindow(icon) {
 
   document.body.appendChild(win);
   attachWindowLogic(win);
-  scrollWindowIntoView(win);
+  if (options.scroll !== false) {
+    activateWindow(win, {
+      focus: true,
+      scroll: isMobileLayout()
+    });
+  }
+
+  return win;
 }
 
 function escapeHTML(str) {

@@ -1,0 +1,45 @@
+{
+  "name": "pixelarticons",
+  "version": "2.2.0",
+  "description": "Finest handmade pixelart icons.",
+  "main": "index.js",
+  "peerDependencies": {
+    "react": ">=16"
+  },
+  "bin": {
+    "pixelarticons": "bin/upgrade.js"
+  },
+  "scripts": {
+    "font": "svgtofont --sources ./svg --output ./fonts",
+    "generate:react": "node scripts/generate-react.js",
+    "prepublishOnly": "npm run generate:react",
+    "validate": "node scripts/validate-icons.js",
+    "browser": "node scripts/generate-browser.js && open icons.html",
+    "test": "echo \"Error: no test specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/halfmage/pixelarticons.git"
+  },
+  "keywords": [
+    "pixel",
+    "pixelart",
+    "icon",
+    "icons",
+    "iconset",
+    "vector"
+  ],
+  "author": "Gerrit Halfmann",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/halfmage/pixelarticons/issues"
+  },
+  "homepage": "https://github.com/halfmage/pixelarticons#readme",
+  "devDependencies": {
+    "np": "^11.2.1",
+    "svgtofont": "^6.5.2"
+  },
+  "overrides": {
+    "tmp": "^0.2.5"
+  }
+}
