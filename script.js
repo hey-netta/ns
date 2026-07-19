@@ -513,9 +513,95 @@ function buildContactFormPayload(form) {
   };
 }
 
+function isPrivateIPv4(hostname) {
+  const match = hostname.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
+  if (!match) return false;
+
+  const [, a, b, c, d] = match.map(Number);
+  if ([a, b, c, d].some(part => part < 0 || part > 255)) return false;
+
+  return (
+    a === 10 ||
+    (a === 192 && b === 168) ||
+    (a === 172 && b >= 16 && b <= 31)
+  );
+}
+
+function isLocalDevelopment(hostname = window.location.hostname) {
+  const host = hostname.toLowerCase();
+
+  return (
+    host === "localhost" ||
+    host.endsWith(".localhost") ||
+    host === "127.0.0.1" ||
+    host.startsWith("127.") ||
+    host === "0.0.0.0" ||
+    host === "::1" ||
+    host.endsWith(".local") ||
+    isPrivateIPv4(host)
+  );
+}
+
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function makeBlankPaintImageUrl(width, height) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="100%" height="100%" fill="white"/></svg>`;
+  return "data:image/svg+xml," + encodeURIComponent(svg);
+}
+
+function getMobilePaintCanvasSize(iframe) {
+  const iframeWidth = Math.floor(iframe.getBoundingClientRect().width || iframe.clientWidth);
+  const toolbarAndChromeWidth = 92;
+  const canvasWidth = Math.max(180, Math.min(360, iframeWidth - toolbarAndChromeWidth));
+  const canvasHeight = Math.max(220, Math.min(300, Math.round(canvasWidth * 1.08)));
+
+  return {
+    width: canvasWidth,
+    height: canvasHeight,
+    iframeWidth
+  };
+}
+
+function initializePaintFrame(win) {
+  const iframe = win.querySelector(".paint-frame");
+  if (!iframe || iframe.dataset.paintInitialized === "true") return;
+
+  iframe.dataset.paintInitialized = "true";
+
+  if (!isMobileLayout()) return;
+
+  requestAnimationFrame(() => {
+    const { width, height } = getMobilePaintCanvasSize(iframe);
+    iframe.src = "https://jspaint.app/#load:" + makeBlankPaintImageUrl(width, height);
+    iframe.dataset.mobileCanvasWidth = String(width);
+    iframe.dataset.mobileCanvasHeight = String(height);
+  });
+}
+
+function showContactSuccess(form) {
+  const contentBox = form.closest(".content-box");
+  if (!contentBox) return;
+
+  contentBox.innerHTML = `
+    <div class="contact-success" role="status" aria-live="polite" tabindex="-1">
+      <img class="contact-success-icon" src="images/pixelarticons-master/svg/mail-right.svg" alt="">
+      <div class="contact-success-copy">
+        <p class="contact-success-title"><b>Message sent.</b></p>
+        <p>I appreciate you stopping by.</p>
+        <p>I’ll be in touch soon.</p>
+      </div>
+    </div>
+  `;
+
+  contentBox.querySelector(".contact-success")?.focus({ preventScroll: true });
+}
+
 async function submitContactForm(form) {
   const status = form.querySelector("[data-contact-status]");
   const submitButton = form.querySelector('button[type="submit"]');
+  const submitLabel = submitButton?.textContent || "Send";
 
   if (!form.checkValidity()) {
     form.reportValidity();
@@ -534,13 +620,21 @@ async function submitContactForm(form) {
 
   if (status) {
     status.textContent = "Sending...";
+    status.classList.add("contact-status-sr");
   }
 
   if (submitButton) {
+    submitButton.textContent = "Sending...";
     submitButton.disabled = true;
   }
 
   try {
+    if (isLocalDevelopment()) {
+      await wait(650);
+      showContactSuccess(form);
+      return payload;
+    }
+
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
@@ -553,17 +647,15 @@ async function submitContactForm(form) {
       throw new Error(`Contact form request failed with ${response.status}`);
     }
 
-    form.reset();
-
-    if (status) {
-      status.textContent = "Thanks! Your message has been sent. I’ll get back to you as soon as I can.";
-    }
+    showContactSuccess(form);
   } catch (err) {
     if (status) {
-      status.textContent = "Something went wrong and your message was not sent. Please try again in a minute.";
+      status.classList.remove("contact-status-sr");
+      status.textContent = "Message not sent. Please try again.";
     }
   } finally {
-    if (submitButton) {
+    if (submitButton && document.body.contains(submitButton)) {
+      submitButton.textContent = submitLabel;
       submitButton.disabled = false;
     }
   }
@@ -743,6 +835,8 @@ function createDynamicWindow(icon, options = {}) {
 
   document.body.appendChild(win);
   attachWindowLogic(win);
+  initializePaintFrame(win);
+
   if (options.scroll !== false) {
     activateWindow(win, {
       focus: true,
