@@ -242,6 +242,7 @@ function openDynamicWindow(launcher) {
   const existing = findWindowByKey("dynamic:" + windowId);
 
   if (existing) {
+    applyFranklinWindowLayout(existing);
     activateWindow(existing, {
       focus: true,
       scroll: isMobileLayout()
@@ -580,6 +581,32 @@ function initializePaintFrame(win) {
   });
 }
 
+function applyFranklinWindowLayout(win) {
+  if (!win || win.dataset.windowId !== "franklin" || isMobileLayout()) return;
+
+  const margin = 20;
+  const topMargin = 20;
+  const upwardOffset = 34;
+  const rightMargin = 20;
+  const bottomMargin = 18;
+  const verticalBreathingRoom = 80;
+  const taskbarHeight = document.getElementById("taskbar")?.offsetHeight || 30;
+  const usableHeight = window.innerHeight - taskbarHeight;
+  const availableWidth = window.innerWidth - margin - rightMargin;
+  const availableHeight = usableHeight - topMargin - bottomMargin;
+  const width = Math.max(360, Math.min(availableWidth, 1440));
+  const height = Math.min(Math.max(360, availableHeight - verticalBreathingRoom), availableHeight, 980);
+  const centeredLeft = (window.innerWidth - width) / 2;
+  const centeredTop = (usableHeight - height) / 2 - upwardOffset;
+  const left = Math.max(margin, Math.min(centeredLeft, window.innerWidth - width - rightMargin));
+  const top = Math.max(topMargin, Math.min(centeredTop, usableHeight - height - bottomMargin));
+
+  win.style.left = `${left}px`;
+  win.style.top = `${top}px`;
+  win.style.width = `${width}px`;
+  win.style.height = `${height}px`;
+}
+
 function showContactSuccess(form) {
   const contentBox = form.closest(".content-box");
   if (!contentBox) return;
@@ -788,6 +815,10 @@ function createDynamicWindow(icon, options = {}) {
   win.dataset.windowId = windowId;
   win.dataset.windowKey = "dynamic:" + windowId;
 
+  if (windowId === "franklin") {
+    win.classList.add("franklin-window");
+  }
+
   win.style.width = width + "px";
   win.style.height = height + "px";
 
@@ -834,6 +865,7 @@ function createDynamicWindow(icon, options = {}) {
   `;
 
   document.body.appendChild(win);
+  applyFranklinWindowLayout(win);
   attachWindowLogic(win);
   initializePaintFrame(win);
 
@@ -846,6 +878,11 @@ function createDynamicWindow(icon, options = {}) {
 
   return win;
 }
+
+window.addEventListener("resize", () => {
+  const franklinWindow = findWindowByKey("dynamic:franklin");
+  applyFranklinWindowLayout(franklinWindow);
+});
 
 function escapeHTML(str) {
   return String(str)
