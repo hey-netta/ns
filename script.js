@@ -514,39 +514,6 @@ function buildContactFormPayload(form) {
   };
 }
 
-function isPrivateIPv4(hostname) {
-  const match = hostname.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
-  if (!match) return false;
-
-  const [, a, b, c, d] = match.map(Number);
-  if ([a, b, c, d].some(part => part < 0 || part > 255)) return false;
-
-  return (
-    a === 10 ||
-    (a === 192 && b === 168) ||
-    (a === 172 && b >= 16 && b <= 31)
-  );
-}
-
-function isLocalDevelopment(hostname = window.location.hostname) {
-  const host = hostname.toLowerCase();
-
-  return (
-    host === "localhost" ||
-    host.endsWith(".localhost") ||
-    host === "127.0.0.1" ||
-    host.startsWith("127.") ||
-    host === "0.0.0.0" ||
-    host === "::1" ||
-    host.endsWith(".local") ||
-    isPrivateIPv4(host)
-  );
-}
-
-function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 function makeBlankPaintImageUrl(width, height) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="100%" height="100%" fill="white"/></svg>`;
   return "data:image/svg+xml," + encodeURIComponent(svg);
@@ -656,12 +623,6 @@ async function submitContactForm(form) {
   }
 
   try {
-    if (isLocalDevelopment()) {
-      await wait(650);
-      showContactSuccess(form);
-      return payload;
-    }
-
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
