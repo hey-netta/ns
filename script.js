@@ -1873,9 +1873,31 @@ if (
   cdTrackSelect &&
   cdCoverImg
 ) {
-  const tracks = Array.from(cdTrackSelect.options);
+  const cdPlaylist = [
+    {
+      title: "Corner Booth",
+      src: "music/01 Corner Booth.mp3"
+    },
+    {
+      title: "Rainy Night",
+      src: "music/02 Rainy Night.mp3"
+    },
+    {
+      title: "Midnight Club",
+      src: "music/03 Midnight Club.mp3"
+    }
+  ];
   const defaultCover = cdCoverImg.getAttribute("src");
   let currentTrack = 0;
+
+  cdTrackSelect.replaceChildren(
+    ...cdPlaylist.map((track, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = track.title;
+      return option;
+    })
+  );
 
   const formatTime = (seconds) => {
     if (isNaN(seconds)) return "0:00";
@@ -1898,34 +1920,44 @@ if (
     }
   };
 
-  const loadTrack = (index, autoplay = false) => {
-    currentTrack = index;
-
-    const track = tracks[currentTrack];
-
-    cdTrackSelect.selectedIndex = currentTrack;
-    cdAudio.src = track.value;
-
-    cdCoverImg.src = track.dataset.cover || defaultCover;
-
+  const resetTrackProgress = () => {
+    cdAudio.currentTime = 0;
     cdCurrentTime.textContent = "0:00";
     cdDuration.textContent = "0:00";
-
     cdProgress.value = 0;
     cdProgress.max = 100;
+  };
+
+  const playCurrentTrack = () => {
+    const playPromise = cdAudio.play();
+
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => setPlayButton(true))
+        .catch(() => setPlayButton(false));
+    } else {
+      setPlayButton(true);
+    }
+  };
+
+  const loadTrack = (index, autoplay = false) => {
+    if (!cdPlaylist.length) return;
+
+    currentTrack = (index + cdPlaylist.length) % cdPlaylist.length;
+
+    const track = cdPlaylist[currentTrack];
+
+    cdTrackSelect.selectedIndex = currentTrack;
+    cdAudio.src = track.src;
+
+    cdCoverImg.src = defaultCover;
+
+    resetTrackProgress();
 
     cdAudio.load();
 
     if (autoplay) {
-      const playPromise = cdAudio.play();
-
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => setPlayButton(true))
-          .catch(() => setPlayButton(false));
-      } else {
-        setPlayButton(true);
-      }
+      playCurrentTrack();
     } else {
       setPlayButton(false);
     }
@@ -1933,15 +1965,7 @@ if (
 
   cdPlay.addEventListener("click", () => {
     if (cdAudio.paused) {
-      const playPromise = cdAudio.play();
-
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => setPlayButton(true))
-          .catch(() => setPlayButton(false));
-      } else {
-        setPlayButton(true);
-      }
+      playCurrentTrack();
     } else {
       cdAudio.pause();
       setPlayButton(false);
@@ -1949,17 +1973,18 @@ if (
   });
 
   cdPrev.addEventListener("click", () => {
-    currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
-    loadTrack(currentTrack, true);
+    const wasPlaying = !cdAudio.paused && !cdAudio.ended;
+    loadTrack(currentTrack - 1, wasPlaying);
   });
 
   cdNext.addEventListener("click", () => {
-    currentTrack = (currentTrack + 1) % tracks.length;
-    loadTrack(currentTrack, true);
+    const wasPlaying = !cdAudio.paused && !cdAudio.ended;
+    loadTrack(currentTrack + 1, wasPlaying);
   });
 
   cdTrackSelect.addEventListener("change", () => {
-    loadTrack(cdTrackSelect.selectedIndex, true);
+    const wasPlaying = !cdAudio.paused && !cdAudio.ended;
+    loadTrack(cdTrackSelect.selectedIndex, wasPlaying);
   });
 
   cdAudio.addEventListener("loadedmetadata", () => {
@@ -1973,12 +1998,13 @@ if (
   });
 
   cdProgress.addEventListener("input", () => {
-    cdAudio.currentTime = cdProgress.value;
+    const nextTime = Number(cdProgress.value);
+    cdCurrentTime.textContent = formatTime(nextTime);
+    cdAudio.currentTime = nextTime;
   });
 
   cdAudio.addEventListener("ended", () => {
-    currentTrack = (currentTrack + 1) % tracks.length;
-    loadTrack(currentTrack, true);
+    loadTrack(currentTrack + 1, true);
   });
 
   loadTrack(0, false);

@@ -216,15 +216,11 @@
     <div class="window-content" style="margin:6px;">
         <div class="cd-player-wrap">
             <div class="cd-cover">
-                <img id="cd-cover-img" src="https://itinerae.neocities.org/premium/demo/itiOS/cd.jpg" alt="album art">
+                <img id="cd-cover-img" src="images/cd.jpg" alt="album art">
             </div>
 
             <div class="cd-panel">
-                <select id="cd-track-select" class="cd-select">
-                    <option value="https://files.catbox.moe/j3lvxi.mp3" data-cover="">First Track</option>
-                    <option value="REAL-MP3-URL-2" data-cover="https://itinerae.neocities.org/premium/demo/itiOS/heart.gif">Second Track</option>
-                    <option value="REAL-MP3-URL-3" data-cover="https://itinerae.neocities.org/premium/demo/itiOS/diamond.gif">Third Track</option>
-                </select>
+                <select id="cd-track-select" class="cd-select"></select>
 
                 <div class="cd-time-row">
                     <span id="cd-current-time">0:00</span>
@@ -242,10 +238,7 @@
     </div>
 
   
-    <!-- You do NOT need to edit this when adding more tracks. -->
-    <audio id="cd-audio" preload="metadata">
-        <source src="https://files.catbox.moe/j3lvxi.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="cd-audio" preload="metadata"></audio>
 </div>
 
 
