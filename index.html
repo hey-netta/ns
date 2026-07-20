@@ -48,17 +48,7 @@
         <img src="images/pixelarticons-master/svg/sparkles.svg" alt="home"> Hello
     </a>
 
-   <!-- Dynamic desktop icon: opens hidden div #window-about.
-I added data-left and data-top here as an example. Delete them if you want this window to open in a random position like the other popup windows. -->
-  
-    <a href="#about" class="desktop-icon" 
-       data-window-id="about" 
-       data-title="About.txt" 
-       data-width="280" 
-       data-height="324" 
-       data-left="475"
-       data-top="350" 
-       data-source="window-about">
+    <a href="#readme" class="desktop-icon" data-static-id="readme">
         <img src="images/pixelarticons-master/svg/info-box.svg" alt="about"> About
     </a>
 
@@ -139,7 +129,7 @@ I added data-left and data-top here as an example. Delete them if you want this 
 <!-- Read me --> 
 <div class="app-window" data-id="readme" style=" top:220px; left:200px; width: 500px; height: 300px;">
     <div class="window-header">
-        <div class="window-title">Netta.txt</div>
+        <div class="window-title">About.txt</div>
         <div class="window-buttons">
             <button class="btn-min" aria-label="Minimize"></button>
             <button class="btn-max" aria-label="Maximize"></button>
@@ -148,46 +138,39 @@ I added data-left and data-top here as an example. Delete them if you want this 
     </div>
     <div class="window-content">
         <div class="content-box">
-
-<b>Name:</b><br>
-Netta Selene<br><br>
-
-<b>Location:</b><br>
-Brooklyn, NY<br><br>
-
-<b>Role:</b><br>
-Design leader<br>
-Founder<br>
-Builder<br><br>
-
-<b>Building:</b><br>
-Domingo<br>
-Matta<br>
-Whatever comes next<br><br>
-
-<b>Experience:</b><br>
-20+ years designing products and leading teams<br><br>
-
-<b>Previously:</b><br>
-Airbnb<br>
-Etsy<br>
-Square<br>
-(and a few others)<br><br>
-
-<b>Guiding principle:</b><br>
-Technology should feel more human.<br><br>
-
-<b>Outside of work:</b><br>
-Music<br>
-Skincare<br>
-Nature<br>
-Long drives<br><br>
-
-<b>Looking for:</b><br>
-A team to build with.          
-          
-          
+            <div class="profile-name">A note about Netta
+            <span class="desktop-note-line"></span></div>
+            I’m a design leader with more than 20 years of experience building products, leading teams, and growing organizations.<br><br>
+            Along the way I’ve been lucky enough to work with companies like Airbnb, Etsy, and Square. I later stepped into the founder seat with Domingo, where I discovered what it means to build not just a product, but an entire business.<br><br>
+            Whether I’m leading a team, writing software, or making skincare, the work has always been driven by curiosity. And it began early.<br><br>
+            As a kid, that meant carrying around a sketchbook and trying to recreate anything that caught my eye. Over time, drawing turned into designing interfaces, leading teams, starting companies, formulating skincare, and, eventually, building software.<br><br>
+            Looking back, the medium has changed far more than the motivation. I’ve always been happiest making thoughtful things that help people in some way.<br><br>
+            Founding Domingo taught me that the work I love isn’t tied to a particular industry. It’s the process of building something from nothing, learning relentlessly, and caring deeply about the people on the other side.<br><br>
+            Building Matta reminded me just how much I enjoy making software. More importantly, it reinforced something that’s been true all along: I’m happiest when I’m learning, making, and sharing what I discover along the way.
+        <div class="profile-status">
+            <div class="profile-row">
+                <b>mood</b>
+                <span>focused</span>
+            </div>
+            <div class="profile-row">
+                <b>listening</b>
+                <span>raffy bushman</span>
+            </div>
+            <div class="profile-row">
+                <b>working on</b>
+                <span>my sleep</span>
+            </div>
+            <div class="profile-row">
+                <b>online since</b>
+                <span>1999</span>
+            </div>
         </div>
+        <div class="profile-links">
+            <a href="https://example.com" target="_blank">neocities.</a>
+            <a href="https://example.com" target="_blank">bluesky.</a>
+            <a href="mailto:you@example.com">email</a>
+        </div>
+</div>
     </div>
 </div>
   
@@ -271,77 +254,33 @@ A team to build with.
 
 <!-- HIDDEN DYNAMIC WINDOW CONTENT (these will open when you click an icon) -->
 
-<!-- About me -->   
-<div id="window-about" class="window-source">
-    <div class="profile-card">
-
-        <div class="profile-top">
-
-            <div class="profile-name">Notes from Netta
-
-                <img src="https://64.media.tumblr.com/f06edd7ec36abd8df38c9854a9f172f9/086782c2d60a85fd-63/s75x75_c1/11f192e23028512a3e2befa3d6e4f4ef8361fb1c.gifv" style="opacity:0.6;" alt="x"> </div>
-
-            <span class="desktop-note-line"></span>
-
-            <p class="profile-text">
-
-                I’ve always been curious about how things work.<br><br>
-                As a kid, that meant carrying around a sketchbook and trying to recreate anything that caught my eye. Over time, drawing turned into designing interfaces, leading teams, starting companies, formulating skincare, and, more recently, writing software.<br><br>
-                Looking back, the medium has changed far more than the motivation. I’ve always been happiest making thoughtful things that help people in some way.<br><br>
-                Leaving tech to build Domingo taught me that the work I love isn’t tied to an industry. It’s the process of building something from nothing, learning relentlessly, and caring deeply about the people on the other side.<br><br>
-                Building Matta reminded me how much I missed making software. More importantly, it reminded me that I’m happiest when I’m learning, making, and sharing what I discover along the way.
-            </p>
-        </div>
-
-        <div class="profile-status">
-            <div class="profile-row">
-                <b>mood</b>
-                <span>focused</span>
-            </div>
-            <div class="profile-row">
-                <b>listening</b>
-                <span>raffy bushman</span>
-            </div>
-            <div class="profile-row">
-                <b>working on</b>
-                <span>my sleep</span>
-            </div>
-            <div class="profile-row">
-                <b>online since</b>
-                <span>1999</span>
-            </div>
-        </div>
-
-        <div class="profile-links">
-            <a href="https://example.com" target="_blank">neocities.</a>
-            <a href="https://example.com" target="_blank">bluesky.</a>
-            <a href="mailto:you@example.com">email</a>
-        </div>
-
-    </div>
-
-</div>
-
-
-
-
-
 <div id="window-credits" class="window-source">
-    This layout was made by Shye / <a href="https://itinerae.org" target="_blank">Itinerae</a>, with inspiration from
-    <a href="https://jdan.github.io/98.css/" target="_blank">98.css</a>. Scrollbar code is from
-    <a href="https://scripted.neocities.org" target="_blank">here</a>. Classic MS Paint is from
-    <a href="https://github.com/1j01/jspaint" target="_blank">here</a>. The icons are from
-    <a href="https://pixelarticons.com/" target="_blank">Pixel art icons</a>. The main font is <a href="https://www.dafont.com/w95fa.font" target="_blank">W95FA</a>.
+    <b>Owner</b><br>
+    Netta Selene<br><br>
+    <b>Location</b><br>
+    Brooklyn, New York<br><br>
+    <b>Version</b><br>
+    NettaOS v1.0<br><br>
+    <b>Built with</b><br>
+    HTML, CSS, JavaScript<br><br>
+    <b>Compatibility</b><br>
+    Desktop • Tablet • Mobile<br><br>
+    <b>Special thanks</b><br>
+    This site began with the wonderful itiOS template by Shye (<a href="https://itinerae.org" target="_blank">Itinerae</a>), whose work provided the foundation for the desktop experience. From there, I extensively customized the HTML, CSS, and JavaScript, rebuilt the responsive layout, added new windows and interactions, integrated JS Paint, and generally made it my own.<br><br>
+    Additional thanks to the creators of <a href="https://jdan.github.io/98.css/" target="_blank">98.css</a> for inspiration, <a href="https://github.com/1j01/jspaint" target="_blank">JS Paint</a> for the classic Paint experience, <a href="https://github.com/1j01/jspaint" target="_blank">Pixel Art Icons</a>, the custom <a href="https://scripted.neocities.org" target="_blank">scrollbar</a>, and the <a href="https://www.dafont.com/w95fa.font" target="_blank">W95FA typeface</a>.
 </div>
+
 
 <div id="window-paint" class="window-source">
     <iframe class="paint-frame" src="https://jspaint.app" width="450" height="430" style="border:0;"></iframe>
 </div>
 
+
 <div id="window-work" class="window-source">
     <b>Selected work</b><br><br>
     A placeholder drawer for case studies, leadership notes, and product work. This window is wired into the desktop system now, so the content can be expanded later without changing the launcher.
 </div>
+
 
 <div id="window-projects" class="window-source">
     <section class="projects-tabs" aria-label="Projects">
@@ -439,16 +378,19 @@ A team to build with.
     <a href="https://example.com" target="_blank">Social</a>
 </div>
 
+
 <div id="window-franklin" class="window-source">
     <div class="franklin-viewer">
         <img class="franklin-image" src="images/franklin.jpeg" alt="Franklin">
     </div>
 </div>
 
+
 <div id="window-tree-id" class="window-source">
     <b>Tree ID</b><br><br>
     Temporary placeholder for a future tree identification link or mini reference window.
 </div>
+
 
 <div id="window-favorite-things" class="window-source">
     <b>Favorite things</b><br><br>
@@ -458,6 +400,7 @@ A team to build with.
     Really good notebooks<br>
     Skincare formulas that finally behave
 </div>
+
 
 <template id="window-contact" class="window-source">
     <form class="contact-form"
@@ -570,19 +513,6 @@ A team to build with.
                 <li class="sm-item">
                     <a class="sm-link" href="#readme" data-static-id="readme">
                         <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/alien.svg">
-                        <span class="sm-text">Netta.txt</span>
-                    </a>
-                </li>
-                <li class="sm-item">
-                    <a class="sm-link" href="#about"
-                       data-window-id="about"
-                       data-title="About.txt"
-                       data-width="280"
-                       data-height="324"
-                       data-left="475"
-                       data-top="350"
-                       data-source="window-about">
-                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/info-box.svg">
                         <span class="sm-text">About.txt</span>
                     </a>
                 </li>
@@ -601,8 +531,8 @@ A team to build with.
                     <a class="sm-link" href="#projects"
                        data-window-id="projects"
                        data-title="Projects"
-                       data-width="360"
-                       data-height="280"
+                       data-width="560"
+                       data-height="430"
                        data-source="window-projects">
                         <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/mouse.svg">
                         <span class="sm-text">Projects</span>
@@ -671,23 +601,23 @@ A team to build with.
         <li class="sm-item">
             <a class="sm-link" href="#contact"
                data-window-id="contact"
-               data-title="Contact Netta"
+               data-title="Messenger"
                data-width="400"
                data-height="390"
                data-source="window-contact">
                 <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/mail.svg">
-                <span class="sm-text">Email me</span>
+                <span class="sm-text">Messenger</span>
             </a>
         </li>
         <li class="sm-item">
             <a class="sm-link" href="#credits"
                data-window-id="credits"
-               data-title="Credits"
+               data-title="System info"
                data-width="240"
                data-height="220"
                data-source="window-credits">
                 <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/users.svg">
-                <span class="sm-text">Credits</span>
+                <span class="sm-text">System info</span>
             </a>
         </li>
 

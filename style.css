@@ -458,7 +458,7 @@ button:focus-visible,
 	box-shadow: inset 1px 1px #fff,
     inset -1px -1px #bbb;
 	color: #666;
-	font-size: 10px;
+	font-size: 15px;
 }
 
 .profile-links a:hover {
@@ -466,8 +466,6 @@ button:focus-visible,
 	color: #333;
 }
   
-
-
 
 /* PROJECTS TABS */
 .content-box:has(.projects-tabs) {
