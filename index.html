@@ -76,8 +76,8 @@ I added data-left and data-top here as an example. Delete them if you want this 
     <a href="#projects" class="desktop-icon"
        data-window-id="projects"
        data-title="Projects"
-       data-width="360"
-       data-height="280"
+       data-width="560"
+       data-height="430"
        data-source="window-projects">
         <img src="images/pixelarticons-master/svg/mouse.svg" alt="resources"> Projects
     </a>
@@ -344,12 +344,93 @@ A team to build with.
 </div>
 
 <div id="window-projects" class="window-source">
-    <b>Projects</b><br><br>
-    Domingo<br>
-    Matta<br>
-    NettaOS<br><br>
-    More detail can live here when the project pages are ready.
+    <section class="projects-tabs" aria-label="Projects">
+        <menu class="projects-tab-list" role="tablist" aria-label="Project sections">
+            <li role="presentation"><button type="button" role="tab" class="projects-tab" aria-selected="true" data-project-tab="overview">Overview</button></li>
+            <li role="presentation"><button type="button" role="tab" class="projects-tab" aria-selected="false" tabindex="-1" data-project-tab="domingo">Domingo</button></li>
+            <li role="presentation"><button type="button" role="tab" class="projects-tab" aria-selected="false" tabindex="-1" data-project-tab="matta">Matta</button></li>
+            <li role="presentation"><button type="button" role="tab" class="projects-tab" aria-selected="false" tabindex="-1" data-project-tab="site">This site</button></li>
+            <li role="presentation"><button type="button" role="tab" class="projects-tab" aria-selected="false" tabindex="-1" data-project-tab="hindsight">Hindsight</button></li>
+            <li role="presentation"><button type="button" role="tab" class="projects-tab" aria-selected="false" tabindex="-1" data-project-tab="three">Three</button></li>
+            <li role="presentation"><button type="button" role="tab" class="projects-tab" aria-selected="false" tabindex="-1" data-project-tab="side-quests">Side quests</button></li>
+        </menu>
+
+        <div class="projects-tab-panel-shell">
+            <article class="projects-tab-panel" role="tabpanel" data-project-panel="overview">
+                <p>I've always liked making things.</p>
+                <p>Some became companies. Some became apps. Some became websites. Some were experiments that quietly taught me something. They all represent a different season of my life, and I'm grateful for every one of them.</p>
+
+                <div class="projects-overview-grid" aria-label="Project groups">
+                    <div>
+                        <b>Current</b>
+                        <ul>
+                            <li>Domingo</li>
+                            <li>Matta</li>
+                            <li>This Site</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <b>Archive</b>
+                        <ul>
+                            <li>Hindsight</li>
+                            <li>Three</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <b>Always in progress</b>
+                        <ul>
+                            <li>Side Quests</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <article class="projects-tab-panel" role="tabpanel" data-project-panel="domingo" hidden>
+                <p><b>Domingo</b> is the skincare company I founded in 2023.</p>
+                <p>What started as a personal ritual during one of the hardest seasons of my life eventually became a business focused on helping people feel safe and beautiful in their skin. Today I formulate every product, run the business, write every email, build the website, design the packaging, photograph the products, and still spend my weekends making body butter by hand.</p>
+                <p>Building Domingo taught me what it really means to build a company, not just a product.</p>
+                <p class="projects-actions"><a class="projects-button" href="https://www.domingo.nyc" target="_blank" rel="noopener">www.domingo.nyc</a></p>
+            </article>
+
+            <article class="projects-tab-panel" role="tabpanel" data-project-panel="matta" hidden>
+                <p><b>Matta</b> is the project I'm currently most excited about.</p>
+                <p>It's an AI companion designed to help people make sense of everything competing for their attention. Rather than becoming another task manager, I'm exploring what it looks like to build software that understands context, notices patterns, and helps people feel a little less overwhelmed.</p>
+                <p>It's also been my excuse to dive back into building software, which I've discovered I still absolutely love.</p>
+                <p class="projects-actions"><button type="button" class="projects-button" disabled>In progress</button></p>
+            </article>
+
+            <article class="projects-tab-panel" role="tabpanel" data-project-panel="site" hidden>
+                <p>This website exists because Squarespace got too expensive.</p>
+                <p>Rather than moving to another template, I decided to build something that felt like wandering through someone's old computer. It's heavily inspired by Windows 98 and the early web, but built to work responsively across desktop and mobile.</p>
+                <p>It's probably the most fun I've had building a personal website and hiding little easter eggs for you.</p>
+            </article>
+
+            <article class="projects-tab-panel" role="tabpanel" data-project-panel="hindsight" hidden>
+                <p>Hindsight was a project I created after realizing I was answering the same career questions over and over from designers just starting out.</p>
+                <p>Instead of keeping those conversations in email, I turned them into a small website filled with the advice I wish someone had given me earlier in my career.</p>
+                <p>The site is still online, but time hasn't been especially kind to it. I've intentionally left it untouched as a snapshot of where I was at the time rather than rebuilding it.</p>
+            </article>
+
+            <article class="projects-tab-panel" role="tabpanel" data-project-panel="three" hidden>
+                <p>Three was an iPhone weather app I designed many years ago.</p>
+                <p>It eventually found its way onto the App Store, received recognition twice from Apple, and taught me an enormous amount about designing and shipping software.</p>
+                <p>The app has long since been retired, but it'll always have a special place in my heart.</p>
+            </article>
+
+            <article class="projects-tab-panel" role="tabpanel" data-project-panel="side-quests" hidden>
+                <p>Not everything I build needs to become a product.</p>
+                <p>Lately I've been spending time following whatever sparks my curiosity next.</p>
+                <ul class="projects-side-quests">
+                    <li><span aria-hidden="true">•</span> Learning Spanish</li>
+                    <li><span aria-hidden="true">•</span> Working toward becoming a Master Naturalist</li>
+                    <li><span aria-hidden="true">•</span> Reading more than I probably should</li>
+                    <li><span aria-hidden="true">•</span> Getting outside whenever I can</li>
+                </ul>
+            </article>
+        </div>
+    </section>
 </div>
+
 
 <div id="window-links" class="window-source">
     <b>Links</b><br><br>

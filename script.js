@@ -265,6 +265,91 @@ function launchWindowFromElement(launcher) {
   return null;
 }
 
+function setProjectTab(tabRoot, selectedTab, options = {}) {
+  if (!tabRoot || !selectedTab) return;
+
+  const selectedKey = selectedTab.dataset.projectTab;
+  const tabs = Array.from(tabRoot.querySelectorAll("[data-project-tab]"));
+  const panels = Array.from(tabRoot.querySelectorAll("[data-project-panel]"));
+
+  tabs.forEach(tab => {
+    const isSelected = tab === selectedTab;
+
+    tab.setAttribute("aria-selected", String(isSelected));
+    tab.tabIndex = isSelected ? 0 : -1;
+  });
+
+  panels.forEach(panel => {
+    panel.hidden = panel.dataset.projectPanel !== selectedKey;
+  });
+
+  if (options.focus) {
+    selectedTab.focus();
+  }
+}
+
+function initializeProjectTabs(win) {
+  const tabRoot = win.querySelector(".projects-tabs");
+  if (!tabRoot || tabRoot.dataset.tabsReady === "true") return;
+
+  tabRoot.dataset.tabsReady = "true";
+
+  const windowId = (win.id || keyToDomId(getWindowKey(win))).replace(/[^a-z0-9_-]/gi, "-");
+  const tabs = Array.from(tabRoot.querySelectorAll("[data-project-tab]"));
+
+  tabs.forEach((tab, index) => {
+    const key = tab.dataset.projectTab;
+    const panel = tabRoot.querySelector(`[data-project-panel="${CSS.escape(key)}"]`);
+
+    if (!panel) return;
+
+    tab.id = `${windowId}-project-tab-${index}`;
+    panel.id = `${windowId}-project-panel-${index}`;
+    tab.setAttribute("aria-controls", panel.id);
+    panel.setAttribute("aria-labelledby", tab.id);
+  });
+
+  setProjectTab(
+    tabRoot,
+    tabs.find(tab => tab.getAttribute("aria-selected") === "true") || tabs[0]
+  );
+
+  tabRoot.addEventListener("click", e => {
+    const tab = e.target.closest("[data-project-tab]");
+    if (!tabRoot.contains(tab)) return;
+
+    setProjectTab(tabRoot, tab, {
+      focus: true
+    });
+  });
+
+  tabRoot.addEventListener("keydown", e => {
+    const currentTab = e.target.closest("[data-project-tab]");
+    if (!currentTab || !tabRoot.contains(currentTab)) return;
+
+    const currentTabs = Array.from(tabRoot.querySelectorAll("[data-project-tab]"));
+    const currentIndex = currentTabs.indexOf(currentTab);
+    let nextIndex = currentIndex;
+
+    if (e.key === "ArrowRight") {
+      nextIndex = (currentIndex + 1) % currentTabs.length;
+    } else if (e.key === "ArrowLeft") {
+      nextIndex = (currentIndex - 1 + currentTabs.length) % currentTabs.length;
+    } else if (e.key === "Home") {
+      nextIndex = 0;
+    } else if (e.key === "End") {
+      nextIndex = currentTabs.length - 1;
+    } else {
+      return;
+    }
+
+    e.preventDefault();
+    setProjectTab(tabRoot, currentTabs[nextIndex], {
+      focus: true
+    });
+  });
+}
+
 function updateMobileWindowObserver() {
   if (mobileWindowObserver) {
     mobileWindowObserver.disconnect();
@@ -828,6 +913,7 @@ function createDynamicWindow(icon, options = {}) {
   document.body.appendChild(win);
   applyFranklinWindowLayout(win);
   attachWindowLogic(win);
+  initializeProjectTabs(win);
   initializePaintFrame(win);
 
   if (options.scroll !== false) {
