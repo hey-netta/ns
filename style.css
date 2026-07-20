@@ -1661,6 +1661,11 @@ button:focus-visible,
 		overflow: hidden;
 	}
 
+	.franklin-window .franklin-image {
+		object-fit: cover;
+		object-position: center center;
+	}
+
 	.cd-player-window .window-content {
 		margin: 6px;
 	}
