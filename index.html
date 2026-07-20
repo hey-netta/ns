@@ -277,8 +277,30 @@
 
 
 <div id="window-work" class="window-source">
-    <b>Selected work</b><br><br>
-    A placeholder drawer for case studies, leadership notes, and product work. This window is wired into the desktop system now, so the content can be expanded later without changing the launcher.
+    <div class="work-panel">
+        <b>Selected work</b>
+        <p>A small collection of product, design leadership, and founder work. My résumé is public. My portfolio is available to recruiters and hiring teams.</p>
+        <div class="work-links">
+            <a class="work-link-button" href="https://docs.google.com/document/d/19473yzlPo_kDDYYK231kBHI0E0rVk4M5hwjY96pcsSc/edit?usp=sharing" target="_blank" rel="noopener">Résumé</a>
+            <a class="work-link-button" href="#portfolio-access" data-portfolio-launch>Portfolio</a>
+        </div>
+    </div>
+</div>
+
+
+<div id="window-portfolio-access" class="window-source">
+    <form class="portfolio-access-form" data-portfolio-access-form>
+        <p class="portfolio-access-help">Enter the portfolio password.</p>
+        <label class="field-row-stacked">
+            <span>Portfolio password</span>
+            <input id="portfolio-password" name="password" type="password" autocomplete="current-password" required aria-describedby="portfolio-access-status" data-portfolio-password>
+        </label>
+        <p id="portfolio-access-status" class="portfolio-access-status" role="status" aria-live="polite" aria-atomic="true" data-portfolio-status></p>
+        <div class="portfolio-access-actions">
+            <button type="button" class="default" data-portfolio-cancel>Cancel</button>
+            <button type="submit" class="default" data-portfolio-open>Open</button>
+        </div>
+    </form>
 </div>
 
 

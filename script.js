@@ -773,6 +773,255 @@ function applyFranklinWindowLayout(win) {
   win.style.height = `${height}px`;
 }
 
+const PORTFOLIO_ACCESS_ENDPOINT = "/.netlify/functions/portfolio-access";
+const PORTFOLIO_ACCESS_MESSAGES = {
+  empty: "Enter the portfolio password.",
+  incorrect: "Incorrect password. Please try again.",
+  unavailable: "Couldn’t verify the password. Please try again."
+};
+let pendingPortfolioTab = null;
+
+function getPortfolioAccessMessage(error) {
+  return error?.code === "incorrect" || error?.status === 401
+    ? PORTFOLIO_ACCESS_MESSAGES.incorrect
+    : PORTFOLIO_ACCESS_MESSAGES.unavailable;
+}
+
+function isIncorrectPortfolioError(error) {
+  return error?.code === "incorrect" || error?.status === 401;
+}
+
+function setPortfolioAccessStatus(form, message) {
+  const status = form?.querySelector("[data-portfolio-status]");
+  const input = form?.querySelector("[data-portfolio-password]");
+
+  if (status && status.textContent !== message) {
+    status.textContent = message;
+  }
+
+  input?.setAttribute("aria-invalid", message ? "true" : "false");
+}
+
+function setPortfolioAccessSubmitting(button, isSubmitting) {
+  if (!button) return;
+
+  button.disabled = isSubmitting;
+  button.textContent = isSubmitting ? "Opening…" : "Open";
+}
+
+function focusWorkWindow() {
+  const workWindow = findWindowByKey("dynamic:work");
+
+  if (workWindow && isVisibleOpenWindow(workWindow)) {
+    activateWindow(workWindow, {
+      focus: true,
+      scroll: false
+    });
+  }
+}
+
+function closePortfolioAccessWindow(win, options = {}) {
+  if (!win || !document.body.contains(win)) return;
+
+  removeTaskButton(win);
+
+  if (mobileWindowObserver) {
+    mobileWindowObserver.unobserve(win);
+    mobileWindowRatios.delete(getWindowKey(win));
+  }
+
+  win.remove();
+
+  if (options.focusWork) {
+    focusWorkWindow();
+  } else {
+    syncActiveTaskbarToActiveWindow();
+  }
+}
+
+function openPortfolioAccessWindow() {
+  const launcher = document.createElement("button");
+
+  launcher.dataset.windowId = "portfolio-access";
+  launcher.dataset.title = "Portfolio access";
+  launcher.dataset.width = "300";
+  launcher.dataset.height = "224";
+  launcher.dataset.source = "window-portfolio-access";
+
+  const win = openDynamicWindow(launcher);
+  requestAnimationFrame(() => {
+    win?.querySelector("[data-portfolio-password]")?.focus({
+      preventScroll: true
+    });
+  });
+
+  return win;
+}
+
+async function validatePortfolioPassword(password) {
+  const response = await fetch(PORTFOLIO_ACCESS_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      password
+    })
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const error = new Error(data.error || "Portfolio access failed.");
+    error.status = response.status;
+    throw error;
+  }
+
+  if (data.ok === false) {
+    const error = new Error(data.error || "Portfolio access failed.");
+    error.code = data.code;
+    throw error;
+  }
+
+  if (data.ok !== true || typeof data.url !== "string" || !data.url) {
+    throw new Error("Portfolio destination missing.");
+  }
+
+  return data.url;
+}
+
+async function submitPortfolioAccessForm(form) {
+  if (form.dataset.submitting === "true") return;
+
+  const win = form.closest(".app-window");
+  const input = form.querySelector("[data-portfolio-password]");
+  const status = form.querySelector("[data-portfolio-status]");
+  const submitButton = form.querySelector("[data-portfolio-open]");
+
+  if (!input?.value.trim()) {
+    setPortfolioAccessStatus(form, PORTFOLIO_ACCESS_MESSAGES.empty);
+    input?.focus({
+      preventScroll: true
+    });
+    return;
+  }
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  const password = input.value;
+  const accessTab = window.open("about:blank", "_blank");
+  pendingPortfolioTab = accessTab || null;
+
+  form.dataset.submitting = "true";
+  setPortfolioAccessSubmitting(submitButton, true);
+  if (status) {
+    setPortfolioAccessStatus(form, "");
+  }
+
+  try {
+    const url = await validatePortfolioPassword(password);
+
+    if (accessTab && !accessTab.closed) {
+      accessTab.location.replace(url);
+      accessTab.opener = null;
+    } else {
+      const fallbackTab = window.open(url, "_blank");
+      if (!fallbackTab) {
+        throw new Error("Popup blocked.");
+      }
+    }
+
+    pendingPortfolioTab = null;
+    closePortfolioAccessWindow(win, {
+      focusWork: true
+    });
+  } catch (error) {
+    if (accessTab && !accessTab.closed) {
+      accessTab.close();
+    }
+
+    pendingPortfolioTab = null;
+
+    setPortfolioAccessStatus(form, getPortfolioAccessMessage(error));
+
+    if (input && isIncorrectPortfolioError(error)) {
+      input.value = "";
+    }
+
+    input?.focus({
+      preventScroll: true
+    });
+  } finally {
+    delete form.dataset.submitting;
+
+    if (submitButton && document.body.contains(submitButton)) {
+      setPortfolioAccessSubmitting(submitButton, false);
+    }
+  }
+}
+
+function initializePortfolioAccessWindow(win) {
+  if (!win || win.dataset.windowId !== "portfolio-access" || win.dataset.portfolioReady === "true") return;
+
+  win.dataset.portfolioReady = "true";
+
+  const form = win.querySelector("[data-portfolio-access-form]");
+  const input = win.querySelector("[data-portfolio-password]");
+  const cancelButton = win.querySelector("[data-portfolio-cancel]");
+  const closeButton = win.querySelector(".btn-close");
+
+  form?.addEventListener("submit", e => {
+    e.preventDefault();
+    submitPortfolioAccessForm(form);
+  });
+
+  input?.addEventListener("input", () => {
+    setPortfolioAccessStatus(form, "");
+  });
+
+  input?.addEventListener("invalid", e => {
+    e.preventDefault();
+    setPortfolioAccessStatus(form, PORTFOLIO_ACCESS_MESSAGES.empty);
+    input.focus({
+      preventScroll: true
+    });
+  });
+
+  cancelButton?.addEventListener("click", e => {
+    e.preventDefault();
+
+    if (pendingPortfolioTab && !pendingPortfolioTab.closed) {
+      pendingPortfolioTab.close();
+      pendingPortfolioTab = null;
+    }
+
+    closePortfolioAccessWindow(win, {
+      focusWork: true
+    });
+  });
+
+  win.addEventListener("keydown", e => {
+    if (e.key !== "Escape") return;
+
+    e.preventDefault();
+    closePortfolioAccessWindow(win, {
+      focusWork: true
+    });
+  });
+
+  closeButton?.addEventListener("click", () => {
+    if (pendingPortfolioTab && !pendingPortfolioTab.closed) {
+      pendingPortfolioTab.close();
+      pendingPortfolioTab = null;
+    }
+
+    requestAnimationFrame(focusWorkWindow);
+  });
+}
+
 function showContactSuccess(form) {
   const contentBox = form.closest(".content-box");
   if (!contentBox) return;
@@ -857,6 +1106,15 @@ document.addEventListener("submit", e => {
 
   e.preventDefault();
   submitContactForm(form);
+});
+
+document.addEventListener("click", e => {
+  const target = e.target instanceof Element ? e.target : e.target?.parentElement;
+  const launcher = target?.closest?.("[data-portfolio-launch]");
+  if (!launcher) return;
+
+  e.preventDefault();
+  openPortfolioAccessWindow();
 });
 
 
@@ -1028,6 +1286,7 @@ function createDynamicWindow(icon, options = {}) {
   applyFranklinWindowLayout(win);
   attachWindowLogic(win);
   initializeProjectTabs(win);
+  initializePortfolioAccessWindow(win);
   initializePaintFrame(win);
 
   if (options.scroll !== false) {
