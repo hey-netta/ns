@@ -17,6 +17,8 @@ const mobileDefaultOpenWindowOrder = [
   "static:image",
   "static:cdplayer"
 ];
+const defaultStaticWindowIds = new Set(["hello", "readme", "image", "cdplayer"]);
+const wideStaticWindowLayouts = new Map();
 let mobileWindowObserver = null;
 const mobileWindowRatios = new Map();
 let mobileActiveLockKey = "";
@@ -215,6 +217,10 @@ function getTaskbarHeight() {
   return document.getElementById("taskbar")?.offsetHeight || 30;
 }
 
+function clampNumber(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
 function parsePixelValue(value) {
   const parsed = Number.parseFloat(value);
   return Number.isFinite(parsed) ? parsed : null;
@@ -258,6 +264,169 @@ function applyWindowRenderedPosition(win, left, top) {
 function initializeWindowIntendedPosition(win) {
   const rendered = getWindowRenderedPosition(win);
   setWindowIntendedPosition(win, rendered.left, rendered.top);
+}
+
+function rememberWideStaticWindowLayout(win) {
+  if (!win?.dataset.id || !defaultStaticWindowIds.has(win.dataset.id)) return;
+
+  const position = getWindowRenderedPosition(win);
+
+  wideStaticWindowLayouts.set(win.dataset.id, {
+    left: position.left,
+    top: position.top,
+    width: parsePixelValue(win.style.width) ?? win.offsetWidth,
+    height: parsePixelValue(win.style.height) ?? win.offsetHeight
+  });
+}
+
+function fitStackedCompactHeights(availableHeight) {
+  const heights = {
+    hello: 154,
+    readme: 260,
+    image: 220,
+    cdplayer: 160
+  };
+  let overflow = Object.values(heights).reduce((sum, height) => sum + height, 0) - availableHeight;
+
+  [
+    ["readme", 220],
+    ["image", 190],
+    ["hello", 144],
+    ["cdplayer", 150]
+  ].forEach(([id, minHeight]) => {
+    if (overflow <= 0) return;
+
+    const reduction = Math.min(overflow, heights[id] - minHeight);
+    heights[id] -= reduction;
+    overflow -= reduction;
+  });
+
+  return heights;
+}
+
+function getCompactStaticWindowLayouts() {
+  const margin = 12;
+  const gap = 12;
+  const compactLeft = window.innerWidth >= 1100 ? 180 : 132;
+  const taskbarHeight = getTaskbarHeight();
+  const usableBottom = window.innerHeight - taskbarHeight - margin;
+  const twoColumnLayout = window.innerWidth >= 1000;
+
+  if (twoColumnLayout) {
+    const left = compactLeft;
+    const right = clampNumber(
+      Math.max(left + 524, Math.round(window.innerWidth * 0.62)),
+      left + 500 + 20,
+      window.innerWidth - 360 - margin
+    );
+
+    return {
+      hello: { left, top: 40, width: 340, height: 154 },
+      readme: { left: left + 20, top: 220, width: 500, height: 300 },
+      image: { left: right, top: 92, width: 360, height: 240 },
+      cdplayer: { left: right, top: 390, width: 360, height: 160 }
+    };
+  }
+
+  const readmeWidth = Math.min(500, window.innerWidth - compactLeft - margin);
+  const helloWidth = Math.min(340, window.innerWidth - compactLeft - margin);
+  const mediaWidth = Math.min(360, window.innerWidth - compactLeft - margin);
+  const availableWidth = window.innerWidth - compactLeft - margin;
+  const subtleOffset = clampNumber(Math.round(availableWidth * 0.13), 34, 74);
+  const leftRail = clampNumber(
+    Math.round(compactLeft + Math.max(0, (availableWidth - readmeWidth) * 0.22)),
+    compactLeft,
+    window.innerWidth - readmeWidth - margin
+  );
+  const rightRail = clampNumber(
+    leftRail + subtleOffset,
+    compactLeft,
+    window.innerWidth - readmeWidth - margin
+  );
+  const mediaLeft = clampNumber(
+    leftRail - Math.round(subtleOffset * 0.35),
+    compactLeft,
+    window.innerWidth - mediaWidth - margin
+  );
+  const cdLeft = clampNumber(
+    mediaLeft + Math.round(subtleOffset * 0.8),
+    compactLeft,
+    window.innerWidth - mediaWidth - margin
+  );
+  const stackTop = 18;
+  const availableStackHeight = usableBottom - stackTop - gap * 3;
+  const heights = fitStackedCompactHeights(availableStackHeight);
+  let top = stackTop;
+  const layouts = {
+    hello: {
+      left: leftRail,
+      top,
+      width: helloWidth,
+      height: heights.hello
+    }
+  };
+
+  top += heights.hello + gap;
+  layouts.readme = {
+    left: rightRail,
+    top,
+    width: readmeWidth,
+    height: heights.readme
+  };
+
+  top += heights.readme + gap;
+  layouts.image = {
+    left: mediaLeft,
+    top,
+    width: mediaWidth,
+    height: heights.image
+  };
+
+  top += heights.image + gap;
+  layouts.cdplayer = {
+    left: cdLeft,
+    top,
+    width: mediaWidth,
+    height: heights.cdplayer
+  };
+
+  return layouts;
+}
+
+function getInitialStaticWindowLayout(staticId) {
+  if (!defaultStaticWindowIds.has(staticId)) return null;
+
+  if (window.innerWidth >= 1380) {
+    return wideStaticWindowLayouts.get(staticId) || null;
+  }
+
+  return getCompactStaticWindowLayouts()[staticId] || wideStaticWindowLayouts.get(staticId) || null;
+}
+
+function applyInitialStaticWindowLayout(win) {
+  const staticId = win?.dataset.id;
+  const layout = staticId ? getInitialStaticWindowLayout(staticId) : null;
+
+  if (!layout) return;
+
+  win.style.left = `${Math.round(layout.left)}px`;
+  win.style.top = `${Math.round(layout.top)}px`;
+  win.style.width = `${Math.round(layout.width)}px`;
+  win.style.height = `${Math.round(layout.height)}px`;
+  setWindowIntendedPosition(win, layout.left, layout.top);
+  delete win.dataset.responsiveClamped;
+}
+
+function applyResponsiveDefaultStaticWindowLayouts() {
+  if (isMobileLayout()) return;
+
+  document.querySelectorAll(".app-window[data-id]").forEach(win => {
+    if (!defaultStaticWindowIds.has(win.dataset.id)) return;
+    if (win.dataset.userPositioned === "true") return;
+    if (getComputedStyle(win).display === "none") return;
+
+    applyInitialStaticWindowLayout(win);
+  });
 }
 
 function syncWindowToResponsiveViewport(win) {
@@ -415,6 +584,7 @@ function openStaticWindow(staticId, options = {}) {
 
     win = template.cloneNode(true);
     document.body.appendChild(win);
+    applyInitialStaticWindowLayout(win);
     initializeWindowIntendedPosition(win);
     attachWindowLogic(win);
   }
@@ -836,6 +1006,10 @@ function attachWindowLogic(win) {
     const nextLeft = e.clientX - offsetX;
     const nextTop = e.clientY - offsetY;
 
+    if (win.dataset.id && defaultStaticWindowIds.has(win.dataset.id)) {
+      win.dataset.userPositioned = "true";
+    }
+
     setWindowIntendedPosition(win, nextLeft, nextTop);
     applyWindowRenderedPosition(win, nextLeft, nextTop);
     syncWindowToResponsiveViewport(win);
@@ -896,6 +1070,7 @@ function attachWindowLogic(win) {
 
 /* STATIC WINDOWS */
 document.querySelectorAll(".app-window[data-id]").forEach(win => {
+  rememberWideStaticWindowLayout(win);
   staticWindowTemplates.set(win.dataset.id, win.cloneNode(true));
 });
 
@@ -903,6 +1078,10 @@ document.querySelectorAll(".app-window").forEach(win => {
 
   if (win.dataset.windowId) {
     restoreWindowPosition(win);
+  }
+
+  if (win.dataset.id) {
+    applyInitialStaticWindowLayout(win);
   }
 
   initializeWindowIntendedPosition(win);
@@ -1580,6 +1759,7 @@ let responsiveLayoutFrame = null;
 function runResponsiveLayout() {
   responsiveLayoutFrame = null;
   const franklinWindow = findWindowByKey("dynamic:franklin");
+  applyResponsiveDefaultStaticWindowLayouts();
   applyFranklinWindowLayout(franklinWindow);
   clampAllWindowsToCompactViewport();
   updateAllProjectPanelHeights();

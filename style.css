@@ -181,6 +181,7 @@ button:focus-visible,
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	width: 78px;
 	text-decoration: none;
 	color: #888;
 	font-size: 13px;
@@ -189,7 +190,9 @@ button:focus-visible,
 }
 
 .desktop-icon img {
+	width: 30px;
 	height: 30px;
+	object-fit: contain;
 	margin-bottom: 8px;
 	filter: grayscale(100%);
 	opacity: 0.4;
@@ -1529,23 +1532,6 @@ button:focus-visible,
 
 	.desktop-note {
 		display: none;
-	}
-
-	.desktop-icons {
-		left: 16px;
-		top: 18px;
-		width: 92px;
-	}
-
-	.desktop-icon {
-		width: 78px;
-		margin-bottom: 14px;
-		font-size: 12px;
-	}
-
-	.desktop-icon img {
-		height: 28px;
-		margin-bottom: 6px;
 	}
 
 	.app-window {
