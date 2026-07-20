@@ -1237,6 +1237,10 @@ function createDynamicWindow(icon, options = {}) {
     win.classList.add("franklin-window");
   }
 
+  if (windowId === "approach") {
+    win.classList.add("approach-window");
+  }
+
   win.style.width = width + "px";
   win.style.height = height + "px";
 

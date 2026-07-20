@@ -52,6 +52,16 @@
         <img src="images/pixelarticons-master/svg/info-box.svg" alt="about"> About
     </a>
 
+    <!-- Dynamic desktop icon: opens hidden div #window-approach -->
+    <a href="#approach" class="desktop-icon"
+       data-window-id="approach"
+       data-title="Approach"
+       data-width="400"
+       data-height="440"
+       data-source="window-approach">
+        <img src="images/pixelarticons-master/svg/notebook.svg" alt="approach"> Approach
+    </a>
+
     <!-- Normal desktop icon -->
     <a href="#work" class="desktop-icon"
        data-window-id="work"
@@ -70,16 +80,6 @@
        data-height="430"
        data-source="window-projects">
         <img src="images/pixelarticons-master/svg/mouse.svg" alt="resources"> Projects
-    </a>
-
-    <!-- Dynamic desktop icon: opens hidden div #window-links -->
-    <a href="#links" class="desktop-icon"
-       data-window-id="links"
-       data-title="Links"
-       data-width="300"
-       data-height="240"
-       data-source="window-links">
-        <img src="images/pixelarticons-master/svg/link.svg" alt="links"> Links
     </a>
 
     <!-- Dynamic desktop icon: opens hidden div #window-paint -->
@@ -393,6 +393,61 @@
 </div>
 
 
+<div id="window-approach" class="window-source">
+    <section class="projects-tabs approach-tabs" aria-label="Approach">
+        <menu class="projects-tab-list" role="tablist" aria-label="Approach sections">
+            <li role="presentation"><button type="button" role="tab" class="projects-tab" aria-selected="true" data-project-tab="overview">Overview</button></li>
+            <li role="presentation"><button type="button" role="tab" class="projects-tab" aria-selected="false" tabindex="-1" data-project-tab="design">Design</button></li>
+            <li role="presentation"><button type="button" role="tab" class="projects-tab" aria-selected="false" tabindex="-1" data-project-tab="leadership">Leadership</button></li>
+            <li role="presentation"><button type="button" role="tab" class="projects-tab" aria-selected="false" tabindex="-1" data-project-tab="ai">AI</button></li>
+            <li role="presentation"><button type="button" role="tab" class="projects-tab" aria-selected="false" tabindex="-1" data-project-tab="taste">Taste</button></li>
+        </menu>
+
+        <div class="projects-tab-panel-shell">
+            <article class="projects-tab-panel approach-tab-panel" role="tabpanel" data-project-panel="overview">
+                <h3>How I approach the work</h3>
+                <p>I’ve spent more than twenty years designing products, building teams, and leading organizations. Along the way, I’ve found myself returning to the same ideas again and again.</p>
+                <p>These aren’t hard rules or a fixed framework. They’re principles that shape how I understand problems, make decisions, lead teams, and evaluate good work.</p>
+                <p>Curiosity is usually where I begin. I follow questions across disciplines, look for patterns, and bring what I learn back into the work.</p>
+                <p>If you’re considering working with me, this is probably the quickest way to understand how I think.</p>
+            </article>
+
+            <article class="projects-tab-panel approach-tab-panel" role="tabpanel" data-project-panel="design" hidden>
+                <h3>Design begins with understanding.</h3>
+                <p>I don’t believe design starts with pixels. It starts with understanding the people, systems, constraints, and decisions surrounding a problem.</p>
+                <p>The strongest teams spend enough time defining the problem before becoming attached to a solution. Once the problem is clear, the shape of the work usually becomes clearer too.</p>
+                <p>I care deeply about craft because details communicate care. Consistency builds trust. Simplicity reduces effort. A polished interface cannot rescue a poorly understood problem, but thoughtful execution can make a good idea feel inevitable.</p>
+                <p>Great product work balances user needs, business goals, and technical realities. The interesting work is finding the path that moves them forward together.</p>
+            </article>
+
+            <article class="projects-tab-panel approach-tab-panel" role="tabpanel" data-project-panel="leadership" hidden>
+                <h3>Create clarity, not dependency.</h3>
+                <p>My goal is to build teams that don’t need me for every decision.</p>
+                <p>I think leadership is about creating the conditions for good work: clear priorities, honest feedback, meaningful ownership, psychological safety, and a shared understanding of quality.</p>
+                <p>The best managers aren’t the people with every answer. They help others ask better questions, develop stronger judgment, and make confident decisions.</p>
+                <p>I care about coaching people as individuals while building systems that help the whole team succeed. Success isn’t measured by how many decisions I make. It’s measured by how well the team can move without waiting for me.</p>
+            </article>
+
+            <article class="projects-tab-panel approach-tab-panel" role="tabpanel" data-project-panel="ai" hidden>
+                <h3>Execution gets faster. Judgment gets more valuable.</h3>
+                <p>AI has dramatically expanded my ability to explore ideas, prototype, write, design, and build software. I use it every day, and my perspective comes from working with it directly rather than observing it from a distance.</p>
+                <p>It can accelerate research, iteration, and execution. It can help a small team attempt work that once required far more time and resources.</p>
+                <p>What it doesn’t replace is curiosity, context, taste, or judgment.</p>
+                <p>As making becomes faster and cheaper, knowing what is worth making becomes more important. The ability to ask better questions, recognize meaningful ideas, evaluate the output, and know when something is truly finished becomes the differentiator.</p>
+            </article>
+
+            <article class="projects-tab-panel approach-tab-panel" role="tabpanel" data-project-panel="taste" hidden>
+                <h3>Taste is discernment.</h3>
+                <p>I think taste is developed through curiosity, attention, and repetition.</p>
+                <p>It comes from reading outside your field, studying why something works, building things, taking them apart, and noticing the difference between something that is merely polished and something that feels right.</p>
+                <p>Music, writing, nature, architecture, formulation, and product design all sharpen different parts of my judgment. The patterns often transfer in ways I don’t expect.</p>
+                <p>Good taste isn’t a single visual style. It’s knowing what matters, what can be removed, where care is needed, and when the work has reached the point where adding more would make it worse.</p>
+            </article>
+        </div>
+    </section>
+</div>
+
+
 <div id="window-links" class="window-source">
     <b>Links</b><br><br>
     <a href="https://example.com" target="_blank">Portfolio</a><br>
@@ -561,14 +616,14 @@
                     </a>
                 </li>
                 <li class="sm-item">
-                    <a class="sm-link" href="#links"
-                       data-window-id="links"
-                       data-title="Links"
-                       data-width="300"
-                       data-height="240"
-                       data-source="window-links">
-                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/link.svg">
-                        <span class="sm-text">Links</span>
+                    <a class="sm-link" href="#approach"
+                       data-window-id="approach"
+                       data-title="Approach"
+                       data-width="400"
+                       data-height="440"
+                       data-source="window-approach">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/notebook.svg">
+                        <span class="sm-text">Approach</span>
                     </a>
                 </li>
             </ul>
@@ -613,6 +668,17 @@
                        data-source="window-favorite-things">
                         <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/list-box.svg">
                         <span class="sm-text">Favorite things.txt</span>
+                    </a>
+                </li>
+                <li class="sm-item">
+                    <a class="sm-link" href="#links"
+                       data-window-id="links"
+                       data-title="Links"
+                       data-width="300"
+                       data-height="240"
+                       data-source="window-links">
+                        <img class="sm-ico" alt="" src="images/pixelarticons-master/svg/link.svg">
+                        <span class="sm-text">Links</span>
                     </a>
                 </li>
             </ul>
