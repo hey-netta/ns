@@ -367,6 +367,30 @@ button:focus-visible,
 	margin-bottom: 14px;
 }
 
+.hello-content {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	overflow: hidden;
+}
+
+.hello-handshake {
+	flex: 0 0 clamp(58px, 21%, 70px);
+	width: clamp(58px, 21%, 70px);
+	min-width: 58px;
+	height: 70px;
+	margin: 0;
+	object-fit: contain;
+	object-position: center center;
+	filter: grayscale(100%);
+	opacity: 0.7;
+}
+
+.hello-copy {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
 .franklin-window .content-box {
 	padding: 0;
 	overflow: hidden;
