@@ -14,11 +14,17 @@
 	box-sizing: border-box;
 }
   
+:root {
+	--taskbar-height: 30px;
+	--compact-window-left: 132px;
+	--compact-window-margin: 12px;
+}
+
 
 body {
 	margin: 0;
 	background: #e6e6e6 url("https://itinerae.neocities.org/premium/demo/itiOS/greynoise.webp");
-	padding: 20px;
+	padding: 20px 20px calc(var(--taskbar-height) + 20px);
 	font-family: "w95f",  Arial, "Courier new", monospace;
 	letter-spacing: 1px;
 	font-size: 15px;
@@ -1145,7 +1151,7 @@ button:focus-visible,
 	bottom: 0;
 	left: 0;
 	right: 0;
-	height: 30px;
+	height: var(--taskbar-height);
 	background: #c0c0c0;
 	border-top: 1px solid #ffffff;
 	box-shadow: inset 0 1px #808080;
@@ -1242,7 +1248,7 @@ button:focus-visible,
 /* START MENU */
 #start-menu {
 	position: fixed;
-	bottom: 30px;
+	bottom: var(--taskbar-height);
 	left: 0;
 	width: 220px;
 	background: #c0c0c0;
@@ -1393,23 +1399,23 @@ button:focus-visible,
   
 
 /* SCROLLBARS */
-::-webkit-scrollbar {
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar {
 	width: 16px;
 	height: 16px;
 }
 
-::-webkit-scrollbar-track {
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-track {
 	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFElEQVQIW2M4fPz0////GYAYyAIASnoKpV3w4kgAAAAASUVORK5CYII=");
 	image-rendering: pixelated;
 	filter: grayscale(100%);
 }
 
-::-webkit-scrollbar-track:active {
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-track:active {
 	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAEElEQVQIW2No6+pjgAAgCwAWogM9VKrgGQAAAABJRU5ErkJggg==");
 	filter: grayscale(100%);
 }
 
-::-webkit-scrollbar-thumb {
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-thumb {
 	border-top: 1px solid #cccccc;
 	border-left: 1px solid #cccccc;
 	border-right: 1px solid black;
@@ -1421,11 +1427,11 @@ button:focus-visible,
 	z-index: 1;
 }
 
-::-webkit-scrollbar-corner {
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-corner {
 	background-color: #cccccc;
 }
 
-::-webkit-resizer {
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-resizer {
 	width: 16px;
 	height: 16px;
 	background-color: #cccccc;
@@ -1435,7 +1441,7 @@ button:focus-visible,
 	image-rendering: pixelated;
 }
 
-::-webkit-scrollbar-button,
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-button,
 .scroll::-webkit-scrollbar-button {
 	border-top: 1px solid #cccccc;
 	border-left: 1px solid #cccccc;
@@ -1451,43 +1457,43 @@ button:focus-visible,
 	background-position: center center;
 }
 
-::-webkit-scrollbar-button:active,
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-button:active,
 .scroll::-webkit-scrollbar-button:active {
 	background-position: 2px 2px;
 }
 
-::-webkit-scrollbar-button:horizontal:decrement,
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-button:horizontal:decrement,
 .scroll::-webkit-scrollbar-button:horizontal:decrement {
 	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAHklEQVQY02NgoBT8xyX8H5fwf1zCpOjAYwceV1EEAAO2D/HsQ4vsAAAAAElFTkSuQmCC");
 }
 
-::-webkit-scrollbar-button:horizontal:increment,
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-button:horizontal:increment,
 .scroll::-webkit-scrollbar-button:horizontal:increment {
 	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAHUlEQVQY02NgIB/8xy3xH7fEf9wS/0nUQZqrKAYAK44P8ZRmzLQAAAAASUVORK5CYII=");
 }
 
-::-webkit-scrollbar-button:vertical:decrement,
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-button:vertical:decrement,
 .scroll::-webkit-scrollbar-button:vertical:decrement {
 	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGklEQVR4AWMYxuA/SYphmETFhDX9x4mHGQAAcL4P8dQiMq8AAAAASUVORK5CYII=");
 }
 
-::-webkit-scrollbar-button:vertical:increment,
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-button:vertical:increment,
 .scroll::-webkit-scrollbar-button:vertical:increment {
 	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAF0lEQVQY02NgoBf4jwJxSOHQhcNAOgMAWWAP8Rv2U3UAAAAASUVORK5CYII=");
 }
 
-::-webkit-scrollbar-button:horizontal:increment:start,
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-button:horizontal:increment:start,
 .scroll::-webkit-scrollbar-button:horizontal:increment:start,
-::-webkit-scrollbar-button:horizontal:decrement:end,
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-button:horizontal:decrement:end,
 .scroll::-webkit-scrollbar-button:horizontal:decrement:end,
-::-webkit-scrollbar-button:vertical:increment:start,
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-button:vertical:increment:start,
 .scroll::-webkit-scrollbar-button:vertical:increment:start,
-::-webkit-scrollbar-button:vertical:decrement:end,
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-button:vertical:decrement:end,
 .scroll::-webkit-scrollbar-button:vertical:decrement:end {
 	display: none;
 }
 
-::-webkit-scrollbar-button:active,
+:where(body, .content-box, .projects-tab-list, .desktop-icons, #taskbar-windows, textarea, .scroll)::-webkit-scrollbar-button:active,
 .scroll::-webkit-scrollbar-button:active {
 	border-top: 1px solid #868a8e;
 	border-left: 1px solid #868a8e;
@@ -1503,9 +1509,82 @@ button:focus-visible,
 	}
 }
 
+@media (min-width: 821px) and (max-width: 1379px) {
+	.desktop-note {
+		display: none;
+	}
+}
+
+@media (min-width: 821px) and (max-width: 1099px) {
+	html,
+	body {
+		max-width: 100%;
+		overflow-x: hidden;
+	}
+
+	body {
+		min-height: 100vh;
+		padding: 16px 16px calc(var(--taskbar-height) + 16px);
+	}
+
+	.desktop-note {
+		display: none;
+	}
+
+	.desktop-icons {
+		left: 16px;
+		top: 18px;
+		width: 92px;
+	}
+
+	.desktop-icon {
+		width: 78px;
+		margin-bottom: 14px;
+		font-size: 12px;
+	}
+
+	.desktop-icon img {
+		height: 28px;
+		margin-bottom: 6px;
+	}
+
+	.app-window {
+		max-width: calc(100vw - var(--compact-window-left) - var(--compact-window-margin));
+		max-height: calc(100vh - var(--taskbar-height) - 24px);
+	}
+
+	.window-content {
+		min-height: 0;
+	}
+
+	.content-box {
+		max-height: 100%;
+	}
+
+	.app-window.franklin-window {
+		max-width: calc(100vw - (var(--compact-window-margin) * 2));
+		max-height: calc(100vh - var(--taskbar-height) - 24px);
+	}
+
+	#taskbar {
+		height: var(--taskbar-height);
+	}
+
+	#taskbar-windows {
+		overflow-x: auto;
+		overflow-y: hidden;
+	}
+
+	#start-menu {
+		bottom: var(--taskbar-height);
+	}
+}
+
 @media (max-width: 820px) {
 	:root {
 		--mobile-taskbar-height: calc(38px + env(safe-area-inset-bottom));
+		--mobile-scrollbar-clearance: 16px;
+		--mobile-taskbar-reserved-height: calc(var(--mobile-taskbar-height) + var(--mobile-scrollbar-clearance));
 	}
 
 	html {
@@ -1514,10 +1593,11 @@ button:focus-visible,
 	}
 
 	body {
-		height: calc(100dvh - var(--mobile-taskbar-height));
-		padding: 0 12px 12px;
+		height: calc(100dvh - var(--mobile-taskbar-reserved-height));
+		padding: 0 12px calc(12px + var(--mobile-scrollbar-clearance));
 		overflow-x: hidden;
 		overflow-y: auto;
+		scrollbar-gutter: stable;
 	}
 
 	.desktop-note {
@@ -1648,7 +1728,7 @@ button:focus-visible,
 
 	.app-window.franklin-window {
 		max-width: 100%;
-		height: clamp(320px, calc(100dvh - var(--mobile-taskbar-height) - 122px), 620px) !important;
+		height: clamp(320px, calc(100dvh - var(--mobile-taskbar-reserved-height) - 122px), 620px) !important;
 	}
 
 	.franklin-window .window-content {
@@ -1676,22 +1756,31 @@ button:focus-visible,
 	}
 
 	#taskbar {
-		height: var(--mobile-taskbar-height);
+		height: var(--mobile-taskbar-reserved-height);
 		padding: 4px 4px calc(4px + env(safe-area-inset-bottom));
-		align-items: stretch;
+		align-items: flex-start;
 	}
 
 	#taskbar-windows {
+		height: calc(100% - 8px - env(safe-area-inset-bottom));
+		align-items: flex-start;
 		overflow-x: auto;
+		overflow-y: hidden;
 	}
 
 	.taskbar-btn {
 		flex: 0 0 auto;
+		align-self: flex-start;
 		max-width: 120px;
 	}
 
+	#start-btn,
+	#taskbar-clock {
+		align-self: flex-start;
+	}
+
 	#start-menu {
-		bottom: var(--mobile-taskbar-height);
+		bottom: var(--mobile-taskbar-reserved-height);
 		max-width: calc(100vw - 12px);
 	}
 
@@ -1708,6 +1797,14 @@ button:focus-visible,
 	.contact-form textarea {
 		font-size: 16px;
 		line-height: 1.2;
+	}
+}
+
+@supports (-webkit-touch-callout: none) {
+	@media (max-width: 820px) and (hover: none) and (pointer: coarse) {
+		:root {
+			--mobile-scrollbar-clearance: 0px;
+		}
 	}
 }
 

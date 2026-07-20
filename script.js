@@ -1,8 +1,10 @@
 let topZ = 10;
 const taskbar = document.getElementById("taskbar-windows");
 const mobileLayoutQuery = window.matchMedia("(max-width: 820px)");
+const constrainedDesktopQuery = window.matchMedia("(min-width: 821px) and (max-width: 1149px)");
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const isMobileLayout = () => mobileLayoutQuery.matches;
+const isConstrainedDesktopLayout = () => constrainedDesktopQuery.matches;
 const taskButtonsByWindowKey = new Map();
 const staticWindowTemplates = new Map();
 const openWindowOrder = [];
@@ -209,8 +211,105 @@ function focusWindow(win) {
   win.focus({ preventScroll: true });
 }
 
+function getTaskbarHeight() {
+  return document.getElementById("taskbar")?.offsetHeight || 30;
+}
+
+function parsePixelValue(value) {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function getWindowRenderedPosition(win) {
+  const rect = win.getBoundingClientRect();
+  const left = parsePixelValue(win.style.left) ?? rect.left;
+  const top = parsePixelValue(win.style.top) ?? rect.top;
+
+  return { left, top };
+}
+
+function setWindowIntendedPosition(win, left, top) {
+  if (!win || !Number.isFinite(left) || !Number.isFinite(top)) return;
+
+  win.dataset.intendedLeft = String(Math.round(left));
+  win.dataset.intendedTop = String(Math.round(top));
+}
+
+function getWindowIntendedPosition(win) {
+  if (!win) return null;
+
+  const left = parsePixelValue(win.dataset.intendedLeft);
+  const top = parsePixelValue(win.dataset.intendedTop);
+
+  if (Number.isFinite(left) && Number.isFinite(top)) {
+    return { left, top };
+  }
+
+  const rendered = getWindowRenderedPosition(win);
+  setWindowIntendedPosition(win, rendered.left, rendered.top);
+  return rendered;
+}
+
+function applyWindowRenderedPosition(win, left, top) {
+  win.style.left = `${Math.round(left)}px`;
+  win.style.top = `${Math.round(top)}px`;
+}
+
+function initializeWindowIntendedPosition(win) {
+  const rendered = getWindowRenderedPosition(win);
+  setWindowIntendedPosition(win, rendered.left, rendered.top);
+}
+
+function syncWindowToResponsiveViewport(win) {
+  if (!win || isMobileLayout()) return;
+
+  const styles = getComputedStyle(document.documentElement);
+  const compactLeft = Number.parseFloat(styles.getPropertyValue("--compact-window-left")) || 132;
+  const margin = Number.parseFloat(styles.getPropertyValue("--compact-window-margin")) || 12;
+  const taskbarHeight = getTaskbarHeight();
+  const intended = getWindowIntendedPosition(win);
+
+  if (!intended) return;
+
+  if (!isConstrainedDesktopLayout()) {
+    applyWindowRenderedPosition(win, intended.left, intended.top);
+    delete win.dataset.responsiveClamped;
+    return;
+  }
+
+  const rect = win.getBoundingClientRect();
+  const width = Math.min(rect.width || win.offsetWidth, window.innerWidth - margin * 2);
+  const height = Math.min(rect.height || win.offsetHeight, window.innerHeight - taskbarHeight - margin * 2);
+  const minLeft = Math.min(compactLeft, Math.max(margin, window.innerWidth - width - margin));
+  const maxLeft = Math.max(margin, window.innerWidth - width - margin);
+  const maxTop = Math.max(margin, window.innerHeight - taskbarHeight - height - margin);
+  const nextLeft = Math.min(Math.max(intended.left, minLeft), Math.max(minLeft, maxLeft));
+  const nextTop = Math.min(Math.max(intended.top, margin), maxTop);
+
+  applyWindowRenderedPosition(win, nextLeft, nextTop);
+  win.dataset.responsiveClamped =
+    Math.round(nextLeft) !== Math.round(intended.left) ||
+    Math.round(nextTop) !== Math.round(intended.top)
+      ? "true"
+      : "false";
+}
+
+function clampWindowToCompactViewport(win) {
+  syncWindowToResponsiveViewport(win);
+}
+
+function clampAllWindowsToCompactViewport() {
+  document.querySelectorAll(".app-window").forEach(win => {
+    if (getComputedStyle(win).display !== "none") {
+      syncWindowToResponsiveViewport(win);
+    }
+  });
+}
+
 function activateWindow(win, options = {}) {
   if (!win) return;
+
+  clampWindowToCompactViewport(win);
 
   const key = getWindowKey(win);
   const wasHidden = win.style.display === "none";
@@ -316,6 +415,7 @@ function openStaticWindow(staticId, options = {}) {
 
     win = template.cloneNode(true);
     document.body.appendChild(win);
+    initializeWindowIntendedPosition(win);
     attachWindowLogic(win);
   }
 
@@ -733,13 +833,18 @@ function attachWindowLogic(win) {
       return;
     }
 
-    win.style.left = `${e.clientX - offsetX}px`;
-    win.style.top = `${e.clientY - offsetY}px`;
+    const nextLeft = e.clientX - offsetX;
+    const nextTop = e.clientY - offsetY;
+
+    setWindowIntendedPosition(win, nextLeft, nextTop);
+    applyWindowRenderedPosition(win, nextLeft, nextTop);
+    syncWindowToResponsiveViewport(win);
   });
 
   document.addEventListener("mouseup", () => {
     if (!dragging) return;
     dragging = false;
+    syncWindowToResponsiveViewport(win);
     saveWindowPosition(win);
   });
 
@@ -800,11 +905,13 @@ document.querySelectorAll(".app-window").forEach(win => {
     restoreWindowPosition(win);
   }
 
+  initializeWindowIntendedPosition(win);
   attachWindowLogic(win);
 });
 
 initializeActiveWindow();
 initializeMobileDefaultWindows();
+clampAllWindowsToCompactViewport();
 
 function initializeActiveWindow() {
   const helloWindow = document.querySelector('.app-window[data-id="hello"]');
@@ -820,10 +927,11 @@ function saveWindowPosition(win) {
   if (!id) return;
 
   const contentBox = win.querySelector(".content-box");
+  const intended = getWindowIntendedPosition(win);
 
   localStorage.setItem("win-" + id, JSON.stringify({
-    left: parseInt(win.style.left, 10),
-    top: parseInt(win.style.top, 10),
+    left: Math.round(intended?.left ?? parseInt(win.style.left, 10)),
+    top: Math.round(intended?.top ?? parseInt(win.style.top, 10)),
     width: parseInt(win.offsetWidth, 10),
     height: parseInt(win.offsetHeight, 10),
     contentHeight: contentBox ? parseInt(contentBox.offsetHeight, 10) : null
@@ -841,6 +949,9 @@ function restoreWindowPosition(win) {
     const pos = JSON.parse(saved);
     if (Number.isFinite(pos.left)) win.style.left = pos.left + "px";
     if (Number.isFinite(pos.top)) win.style.top = pos.top + "px";
+    if (Number.isFinite(pos.left) && Number.isFinite(pos.top)) {
+      setWindowIntendedPosition(win, pos.left, pos.top);
+    }
   } catch (err) {
     localStorage.removeItem("win-" + id);
   }
@@ -918,6 +1029,7 @@ function applyFranklinWindowLayout(win) {
   win.style.top = `${top}px`;
   win.style.width = `${width}px`;
   win.style.height = `${height}px`;
+  setWindowIntendedPosition(win, left, top);
 }
 
 const PORTFOLIO_ACCESS_ENDPOINT = "/.netlify/functions/portfolio-access";
@@ -1358,14 +1470,22 @@ if (mobileLayoutQuery.addEventListener) {
   mobileLayoutQuery.addEventListener("change", () => {
     mobileScrollTrackingEnabled = false;
     syncOpenWindowOrder();
+    scheduleResponsiveLayout();
     updateMobileWindowObserver();
   });
 } else {
   mobileLayoutQuery.addListener(() => {
     mobileScrollTrackingEnabled = false;
     syncOpenWindowOrder();
+    scheduleResponsiveLayout();
     updateMobileWindowObserver();
   });
+}
+
+if (constrainedDesktopQuery.addEventListener) {
+  constrainedDesktopQuery.addEventListener("change", scheduleResponsiveLayout);
+} else {
+  constrainedDesktopQuery.addListener(scheduleResponsiveLayout);
 }
 
 function createDynamicWindow(icon, options = {}) {
@@ -1403,7 +1523,7 @@ function createDynamicWindow(icon, options = {}) {
   } else {
     const iconColumnWidth = 160;
     const padding = 20;
-    const taskbarHeight = 60;
+    const taskbarHeight = getTaskbarHeight() + 30;
 
     const maxLeft = Math.max(iconColumnWidth, window.innerWidth - width - padding);
     const maxTop = Math.max(padding, window.innerHeight - height - taskbarHeight);
@@ -1437,10 +1557,13 @@ function createDynamicWindow(icon, options = {}) {
 
   document.body.appendChild(win);
   applyFranklinWindowLayout(win);
+  initializeWindowIntendedPosition(win);
+  syncWindowToResponsiveViewport(win);
   attachWindowLogic(win);
   initializeProjectTabs(win);
   initializePortfolioAccessWindow(win);
   initializePaintFrame(win);
+  requestAnimationFrame(() => syncWindowToResponsiveViewport(win));
 
   if (options.activate !== false) {
     activateWindow(win, {
@@ -1452,15 +1575,24 @@ function createDynamicWindow(icon, options = {}) {
   return win;
 }
 
-window.addEventListener("resize", () => {
+let responsiveLayoutFrame = null;
+
+function runResponsiveLayout() {
+  responsiveLayoutFrame = null;
   const franklinWindow = findWindowByKey("dynamic:franklin");
   applyFranklinWindowLayout(franklinWindow);
+  clampAllWindowsToCompactViewport();
   updateAllProjectPanelHeights();
-});
+}
 
-window.addEventListener("orientationchange", () => {
-  updateAllProjectPanelHeights();
-});
+function scheduleResponsiveLayout() {
+  if (responsiveLayoutFrame !== null) return;
+  responsiveLayoutFrame = requestAnimationFrame(runResponsiveLayout);
+}
+
+window.addEventListener("resize", scheduleResponsiveLayout);
+
+window.addEventListener("orientationchange", scheduleResponsiveLayout);
 
 function escapeHTML(str) {
   return String(str)
