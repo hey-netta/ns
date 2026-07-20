@@ -283,9 +283,97 @@ function setProjectTab(tabRoot, selectedTab, options = {}) {
     panel.hidden = panel.dataset.projectPanel !== selectedKey;
   });
 
+  scheduleProjectPanelHeightUpdate(tabRoot);
+
   if (options.focus) {
-    selectedTab.focus();
+    selectedTab.focus({
+      preventScroll: true
+    });
   }
+}
+
+function getProjectTabFromEvent(tabRoot, event) {
+  const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+  const tab = target?.closest?.("[data-project-tab]");
+
+  return tab && tabRoot.contains(tab) ? tab : null;
+}
+
+function stopMobileProjectTabWindowEvent(tabRoot, event) {
+  if (!isMobileLayout() || !getProjectTabFromEvent(tabRoot, event)) return;
+
+  event.stopPropagation();
+}
+
+function activateProjectTabByKey(tabRoot, key, options = {}) {
+  if (!tabRoot || !key) return;
+
+  const tab = tabRoot.querySelector(`[data-project-tab="${CSS.escape(key)}"]`);
+  setProjectTab(tabRoot, tab, options);
+}
+
+function measureProjectPanelHeight(panel, width) {
+  const wasHidden = panel.hidden;
+  const previousStyle = panel.getAttribute("style");
+
+  panel.hidden = false;
+  panel.style.position = "absolute";
+  panel.style.visibility = "hidden";
+  panel.style.pointerEvents = "none";
+  panel.style.display = "block";
+  panel.style.width = width ? `${width}px` : "";
+
+  const height = Math.ceil(panel.scrollHeight);
+
+  if (previousStyle === null) {
+    panel.removeAttribute("style");
+  } else {
+    panel.setAttribute("style", previousStyle);
+  }
+
+  panel.hidden = wasHidden;
+
+  return height;
+}
+
+function updateProjectPanelHeight(tabRoot) {
+  const shell = tabRoot?.querySelector(".projects-tab-panel-shell");
+  if (!shell) return;
+
+  const panels = Array.from(tabRoot.querySelectorAll("[data-project-panel]"));
+  const visiblePanel = panels.find(panel => !panel.hidden) || panels[0];
+  const panelWidth = Math.ceil(
+    visiblePanel?.getBoundingClientRect().width ||
+    Math.max(0, shell.clientWidth)
+  );
+  const maxHeight = panels.reduce((height, panel) => {
+    return Math.max(height, measureProjectPanelHeight(panel, panelWidth));
+  }, 0);
+  const shellStyles = getComputedStyle(shell);
+  const shellChrome =
+    Number.parseFloat(shellStyles.paddingTop) +
+    Number.parseFloat(shellStyles.paddingBottom) +
+    Number.parseFloat(shellStyles.borderTopWidth) +
+    Number.parseFloat(shellStyles.borderBottomWidth);
+
+  shell.style.setProperty("--projects-panel-min-height", `${Math.ceil(maxHeight + shellChrome)}px`);
+}
+
+function scheduleProjectPanelHeightUpdate(tabRoot) {
+  if (!tabRoot || tabRoot.dataset.panelMeasureQueued === "true") return;
+
+  tabRoot.dataset.panelMeasureQueued = "true";
+
+  requestAnimationFrame(() => {
+    delete tabRoot.dataset.panelMeasureQueued;
+    updateProjectPanelHeight(tabRoot);
+  });
+}
+
+function updateAllProjectPanelHeights() {
+  document.querySelectorAll(".projects-tabs").forEach(tabRoot => {
+    scheduleProjectPanelHeightUpdate(tabRoot);
+  });
 }
 
 function initializeProjectTabs(win) {
@@ -314,9 +402,34 @@ function initializeProjectTabs(win) {
     tabs.find(tab => tab.getAttribute("aria-selected") === "true") || tabs[0]
   );
 
+  tabRoot.addEventListener("pointerdown", e => {
+    stopMobileProjectTabWindowEvent(tabRoot, e);
+  });
+
+  tabRoot.addEventListener("mousedown", e => {
+    stopMobileProjectTabWindowEvent(tabRoot, e);
+  });
+
+  tabRoot.addEventListener("focusin", e => {
+    stopMobileProjectTabWindowEvent(tabRoot, e);
+  });
+
   tabRoot.addEventListener("click", e => {
-    const tab = e.target.closest("[data-project-tab]");
-    if (!tabRoot.contains(tab)) return;
+    const overviewLink = e.target.closest("[data-project-target-tab]");
+    if (overviewLink && tabRoot.contains(overviewLink)) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      activateProjectTabByKey(tabRoot, overviewLink.dataset.projectTargetTab, {
+        focus: true
+      });
+      return;
+    }
+
+    const tab = getProjectTabFromEvent(tabRoot, e);
+    if (!tab) return;
+
+    e.stopPropagation();
 
     setProjectTab(tabRoot, tab, {
       focus: true
@@ -324,8 +437,8 @@ function initializeProjectTabs(win) {
   });
 
   tabRoot.addEventListener("keydown", e => {
-    const currentTab = e.target.closest("[data-project-tab]");
-    if (!currentTab || !tabRoot.contains(currentTab)) return;
+    const currentTab = getProjectTabFromEvent(tabRoot, e);
+    if (!currentTab) return;
 
     const currentTabs = Array.from(tabRoot.querySelectorAll("[data-project-tab]"));
     const currentIndex = currentTabs.indexOf(currentTab);
@@ -344,6 +457,7 @@ function initializeProjectTabs(win) {
     }
 
     e.preventDefault();
+    e.stopPropagation();
     setProjectTab(tabRoot, currentTabs[nextIndex], {
       focus: true
     });
@@ -929,6 +1043,11 @@ function createDynamicWindow(icon, options = {}) {
 window.addEventListener("resize", () => {
   const franklinWindow = findWindowByKey("dynamic:franklin");
   applyFranklinWindowLayout(franklinWindow);
+  updateAllProjectPanelHeights();
+});
+
+window.addEventListener("orientationchange", () => {
+  updateAllProjectPanelHeights();
 });
 
 function escapeHTML(str) {

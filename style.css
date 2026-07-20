@@ -540,7 +540,7 @@ button:focus-visible,
 
 .projects-tab-panel-shell {
 	flex: 1 1 auto;
-	min-height: 0;
+	min-height: var(--projects-panel-min-height, 0);
 	padding: 12px;
 	border: 1px solid #808080;
 	background: #ffffff;
@@ -599,6 +599,36 @@ button:focus-visible,
 .projects-overview-grid li,
 .projects-side-quests li {
 	margin: 0 0 5px;
+}
+
+.projects-overview-link {
+	display: inline-block;
+	margin: 0;
+	padding: 1px 3px;
+	border: 1px solid transparent;
+	border-radius: 0;
+	background: transparent;
+	color: #000;
+	font: inherit;
+	letter-spacing: inherit;
+	text-align: left;
+	text-decoration: underline dotted #808080;
+	text-underline-offset: 2px;
+	cursor: pointer;
+}
+
+.projects-overview-link:hover,
+.projects-overview-link:focus-visible {
+	background: #d4d0c8;
+	border-color: #808080;
+	box-shadow: inset 1px 1px #ffffff,
+    inset -1px -1px #808080;
+	outline: none;
+}
+
+.projects-overview-link:active {
+	box-shadow: inset -1px -1px #ffffff,
+    inset 1px 1px #808080;
 }
 
 .projects-side-quests span {
@@ -1409,6 +1439,11 @@ button:focus-visible,
 		padding-bottom: 2px;
 	}
 
+	.projects-tab-list::after {
+		content: "";
+		flex: 0 0 5px;
+	}
+
 	.projects-tab {
 		min-height: 28px;
 		padding: 5px 9px 4px;
@@ -1426,6 +1461,16 @@ button:focus-visible,
 
 	.projects-overview-grid {
 		grid-template-columns: 1fr;
+	}
+
+	.projects-overview-grid ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 5px 14px;
+	}
+
+	.projects-overview-grid li {
+		margin-bottom: 0;
 	}
 
 	.window-img {
