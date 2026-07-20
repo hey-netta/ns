@@ -5,6 +5,16 @@ const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
 const isMobileLayout = () => mobileLayoutQuery.matches;
 const taskButtonsByWindowKey = new Map();
 const staticWindowTemplates = new Map();
+const openWindowOrder = [];
+const mobileDefaultOpenWindowOrder = [
+  "static:hello",
+  "static:readme",
+  "dynamic:approach",
+  "dynamic:work",
+  "dynamic:projects",
+  "static:image",
+  "static:cdplayer"
+];
 let mobileWindowObserver = null;
 const mobileWindowRatios = new Map();
 let mobileActiveLockKey = "";
@@ -44,6 +54,93 @@ function isOpenWindow(win) {
 
 function isVisibleOpenWindow(win) {
   return isOpenWindow(win) && getComputedStyle(win).display !== "none";
+}
+
+function compactOpenWindowOrder() {
+  for (let index = openWindowOrder.length - 1; index >= 0; index--) {
+    const key = openWindowOrder[index];
+    const win = findWindowByKey(key);
+
+    if (!isOpenWindow(win)) {
+      openWindowOrder.splice(index, 1);
+    }
+  }
+}
+
+function sortTaskbarByOpenWindowOrder() {
+  compactOpenWindowOrder();
+
+  openWindowOrder.forEach(key => {
+    const taskBtn = taskButtonsByWindowKey.get(key);
+    if (taskBtn) {
+      taskbar.appendChild(taskBtn);
+    }
+  });
+}
+
+function applyMobileOpenWindowOrder() {
+  if (!isMobileLayout()) return;
+
+  compactOpenWindowOrder();
+
+  openWindowOrder.forEach(key => {
+    const win = findWindowByKey(key);
+
+    if (isOpenWindow(win)) {
+      document.body.appendChild(win);
+    }
+  });
+}
+
+function syncOpenWindowOrder() {
+  compactOpenWindowOrder();
+  sortTaskbarByOpenWindowOrder();
+  applyMobileOpenWindowOrder();
+}
+
+function registerOpenWindow(win) {
+  if (!win) return;
+
+  const key = getWindowKey(win);
+
+  if (!openWindowOrder.includes(key)) {
+    openWindowOrder.push(key);
+  }
+
+  syncOpenWindowOrder();
+}
+
+function unregisterOpenWindow(win) {
+  const key = typeof win === "string" ? win : getWindowKey(win);
+  const index = openWindowOrder.indexOf(key);
+
+  if (index !== -1) {
+    openWindowOrder.splice(index, 1);
+  }
+
+  syncOpenWindowOrder();
+}
+
+function setOpenWindowOrder(keys) {
+  openWindowOrder.splice(0, openWindowOrder.length);
+
+  keys.forEach(key => {
+    const win = findWindowByKey(key);
+
+    if (isOpenWindow(win) && !openWindowOrder.includes(key)) {
+      openWindowOrder.push(key);
+    }
+  });
+
+  document.querySelectorAll(".app-window").forEach(win => {
+    const key = getWindowKey(win);
+
+    if (isOpenWindow(win) && !openWindowOrder.includes(key)) {
+      openWindowOrder.push(key);
+    }
+  });
+
+  syncOpenWindowOrder();
 }
 
 function setActiveTaskButton(key) {
@@ -188,6 +285,7 @@ function ensureTaskButton(win) {
   });
 
   taskBtn.setAttribute("aria-controls", win.id || keyToDomId(key));
+  registerOpenWindow(win);
   return taskBtn;
 }
 
@@ -199,6 +297,8 @@ function removeTaskButton(win) {
     taskBtn.remove();
     taskButtonsByWindowKey.delete(key);
   }
+
+  unregisterOpenWindow(key);
 }
 
 function closeStartMenu() {
@@ -206,7 +306,7 @@ function closeStartMenu() {
   if (startBtn) startBtn.classList.remove("active");
 }
 
-function openStaticWindow(staticId) {
+function openStaticWindow(staticId, options = {}) {
   let win = findWindowByKey("static:" + staticId) ||
     document.querySelector(`.app-window[data-id="${CSS.escape(staticId)}"]`);
 
@@ -224,33 +324,38 @@ function openStaticWindow(staticId) {
   }
 
   ensureTaskButton(win);
+  win.style.display = "flex";
 
   if (mobileWindowObserver) {
     mobileWindowObserver.observe(win);
   }
 
-  activateWindow(win, {
-    focus: true,
-    scroll: isMobileLayout()
-  });
+  if (options.activate !== false) {
+    activateWindow(win, {
+      focus: true,
+      scroll: options.scroll ?? isMobileLayout()
+    });
+  }
 
   return win;
 }
 
-function openDynamicWindow(launcher) {
+function openDynamicWindow(launcher, options = {}) {
   const windowId = launcher.dataset.windowId;
   const existing = findWindowByKey("dynamic:" + windowId);
 
   if (existing) {
     applyFranklinWindowLayout(existing);
-    activateWindow(existing, {
-      focus: true,
-      scroll: isMobileLayout()
-    });
+    if (options.activate !== false) {
+      activateWindow(existing, {
+        focus: true,
+        scroll: options.scroll ?? isMobileLayout()
+      });
+    }
     return existing;
   }
 
-  return createDynamicWindow(launcher);
+  return createDynamicWindow(launcher, options);
 }
 
 function launchWindowFromElement(launcher) {
@@ -263,6 +368,47 @@ function launchWindowFromElement(launcher) {
   }
 
   return null;
+}
+
+function getDynamicWindowLauncher(windowId) {
+  return document.querySelector(
+    `.desktop-icon[data-window-id="${CSS.escape(windowId)}"], ` +
+    `.sm-link[data-window-id="${CSS.escape(windowId)}"]`
+  );
+}
+
+function openWindowByKey(key, options = {}) {
+  if (key.startsWith("static:")) {
+    return openStaticWindow(key.slice("static:".length), options);
+  }
+
+  if (key.startsWith("dynamic:")) {
+    const launcher = getDynamicWindowLauncher(key.slice("dynamic:".length));
+    return launcher ? openDynamicWindow(launcher, options) : null;
+  }
+
+  return null;
+}
+
+function initializeMobileDefaultWindows() {
+  if (!isMobileLayout()) return;
+
+  mobileDefaultOpenWindowOrder.forEach(key => {
+    openWindowByKey(key, {
+      activate: false,
+      scroll: false
+    });
+  });
+
+  setOpenWindowOrder(mobileDefaultOpenWindowOrder);
+
+  const helloWindow = findWindowByKey("static:hello");
+  if (helloWindow) {
+    activateWindow(helloWindow, {
+      focus: true,
+      scroll: false
+    });
+  }
 }
 
 function setProjectTab(tabRoot, selectedTab, options = {}) {
@@ -658,6 +804,7 @@ document.querySelectorAll(".app-window").forEach(win => {
 });
 
 initializeActiveWindow();
+initializeMobileDefaultWindows();
 
 function initializeActiveWindow() {
   const helloWindow = document.querySelector('.app-window[data-id="hello"]');
@@ -1210,11 +1357,13 @@ document.body.addEventListener("scroll", () => {
 if (mobileLayoutQuery.addEventListener) {
   mobileLayoutQuery.addEventListener("change", () => {
     mobileScrollTrackingEnabled = false;
+    syncOpenWindowOrder();
     updateMobileWindowObserver();
   });
 } else {
   mobileLayoutQuery.addListener(() => {
     mobileScrollTrackingEnabled = false;
+    syncOpenWindowOrder();
     updateMobileWindowObserver();
   });
 }
@@ -1293,10 +1442,10 @@ function createDynamicWindow(icon, options = {}) {
   initializePortfolioAccessWindow(win);
   initializePaintFrame(win);
 
-  if (options.scroll !== false) {
+  if (options.activate !== false) {
     activateWindow(win, {
       focus: true,
-      scroll: isMobileLayout()
+      scroll: options.scroll ?? isMobileLayout()
     });
   }
 
