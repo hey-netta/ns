@@ -1,5 +1,11 @@
 const crypto = require("crypto");
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "https://nettaselene.com",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type"
+};
+
 const FAILURE_LIMIT = 5;
 const COOLDOWN_MS = 60 * 1000;
 const attemptsByClient = new Map();
@@ -8,6 +14,7 @@ function json(statusCode, body) {
   return {
     statusCode,
     headers: {
+      ...CORS_HEADERS,
       "Content-Type": "application/json",
       "Cache-Control": "no-store"
     },
@@ -49,6 +56,17 @@ function matchesSecret(submitted, secret) {
 }
 
 exports.handler = async event => {
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 204,
+      headers: {
+        ...CORS_HEADERS,
+        "Cache-Control": "no-store"
+      },
+      body: ""
+    };
+  }
+
   if (event.httpMethod !== "POST") {
     return json(405, {
       error: "Method not allowed."

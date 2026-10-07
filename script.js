@@ -1211,7 +1211,7 @@ function applyFranklinWindowLayout(win) {
   setWindowIntendedPosition(win, left, top);
 }
 
-const PORTFOLIO_ACCESS_ENDPOINT = "/.netlify/functions/portfolio-access";
+const PORTFOLIO_ACCESS_ENDPOINT = "https://nettaos.netlify.app/.netlify/functions/portfolio-access";
 const PORTFOLIO_ACCESS_MESSAGES = {
   empty: "Enter the portfolio password.",
   incorrect: "Incorrect password. Please try again.",
